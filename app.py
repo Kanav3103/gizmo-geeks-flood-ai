@@ -227,7 +227,7 @@ with tabs[0]:
     st.write("This update will be stopped after the event, as our PCs will not be able to handle the load, for an extended amount of time, but this can be done, given an ample amount of resources")
     
     mumbai_data = {
-        "Rainfall (mm)": 200,
+        "Rainfall (mm)": 215,
         "Humidity (%)": 82,
         "Temperature (°C)": 29,
         "Soil Moisture (%)": 55

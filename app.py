@@ -243,9 +243,13 @@ with tabs[0]:
     st.table(df_mumbai)
 
     # 🔹 Predict flood risk for Mumbai
-    pred = model.predict([[mumbai_data["Rainfall (mm)"], mumbai_data["Humidity (%)"],
-                           mumbai_data["Temperature (°C)"], mumbai_data["Soil Moisture (%)"]]])[0]
-    risk = round(float(np.clip(pred, 0, 100)), 2)
+    if mumbai_data["Rainfall (mm)"] < 50:
+        risk = 0
+    else:
+        pred = model.predict([[mumbai_data["Rainfall (mm)"], mumbai_data["Humidity (%)"],
+                               mumbai_data["Temperature (°C)"], mumbai_data["Soil Moisture (%)"]]])[0]
+        risk = round(float(np.clip(pred, 0, 100)), 2)
+        
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
     # 🔹 Show safety guidance for the predicted risk
@@ -268,10 +272,14 @@ with tabs[1]:
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)# Minimum, Maximum, Default
 
     if st.button("Predict Risk"):
-        pred = model.predict([[rainfall, humidity, temperature, soil]])[0]
-        risk = round(float(np.clip(pred, 0, 100)), 2)
-        st.subheader(f"Predicted Flood Risk: {risk}%")
+        if rainfall < 50:
+            risk = 0
+        else:
+            pred = model.predict([[rainfall, humidity, temperature, soil]])[0]
+            risk = round(float(np.clip(pred, 0, 100)), 2)
 
+        st.subheader(f"Predicted Flood Risk: {risk}%")
+        
         for (low, high), guide in safety_guide.items():
             if low <= risk <= high:
                 st.markdown(f"### 🛟 Flood Safety Actions ({low}-{high}% Risk)")

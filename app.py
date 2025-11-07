@@ -223,9 +223,10 @@ tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
-    st.write("The data is automatically updated from the satellites(SMAP, GRACE, ERA5).")
-    st.write("This update will be stopped after the event, as our PCs will not be able to handle the load, for an extended amount of time, but this can be done, given an ample amount of resources")
+    st.write("The data is automatically updated from the satellites (SMAP, GRACE, ERA5).")
+    st.write("This update will be stopped after the event, as our PCs will not be able to handle the load for an extended amount of time, but this can be done, given ample resources.")
     
+    # 🔹 Example live data (you can change these values anytime)
     mumbai_data = {
         "Rainfall (mm)": 215,
         "Humidity (%)": 82,
@@ -236,10 +237,21 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
+    # 🔹 Predict flood risk for Mumbai
     pred = model.predict([[mumbai_data["Rainfall (mm)"], mumbai_data["Humidity (%)"],
                            mumbai_data["Temperature (°C)"], mumbai_data["Soil Moisture (%)"]]])[0]
     risk = round(float(np.clip(pred, 0, 100)), 2)
     st.subheader(f"Predicted Flood Risk: {risk}%")
+
+    # 🔹 Show safety guidance for the predicted risk
+    for (low, high), guide in safety_guide.items():
+        if low <= risk <= high:
+            st.markdown(f"### 🛟 Flood Safety Actions for Mumbai ({low}-{high}% Risk)")
+            st.markdown(f"**Before Flood:** {guide['Before']}")
+            st.markdown(f"**During Flood:** {guide['During']}")
+            st.markdown(f"**After Flood:** {guide['After']}")
+            break
+
 
 # ---------------- TAB 2 ----------------
 with tabs[1]:

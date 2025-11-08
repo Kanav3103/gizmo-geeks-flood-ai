@@ -346,8 +346,8 @@ with tabs[3]:
 
     st.success("Stay alert, stay safe, and help others when possible 💪")
 
-# ---------------- TAB 4 ----------------
-with tabs[3]:
+# ---------------- TAB 5 ----------------
+with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 

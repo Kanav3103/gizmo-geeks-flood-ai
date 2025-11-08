@@ -225,12 +225,8 @@ safety_guide = {
 st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
-tabs = st.tabs([
-    "🌆 Mumbai Live Data",
-    "🔍 Predict Flood Risk",
-    "🛟 Flood Safety Guide",
-    "🧭 Evacuation Route & Safe Shelters"
-])
+tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood Safety Guide", "🚨 Emergency Helplines", "🧭 Evacuation Route & Safe Shelters"])
+
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:

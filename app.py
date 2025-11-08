@@ -11,6 +11,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import joblib
+import folium
+from streamlit_folium import st_folium
 
 # =====================================
 # 🔸 SIMULATED MODEL TRAINING (Random data)
@@ -223,7 +225,12 @@ safety_guide = {
 st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
-tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood Safety Guide", "🚨 Emergency Helplines"])
+tabs = st.tabs([
+    "🌆 Mumbai Live Data",
+    "🔍 Predict Flood Risk",
+    "🛟 Flood Safety Guide",
+    "🧭 Evacuation Route & Safe Shelters"
+])
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
@@ -338,3 +345,92 @@ with tabs[3]:
     )
 
     st.success("Stay alert, stay safe, and help others when possible 💪")
+
+# ---------------- TAB 4 ----------------
+with tabs[3]:
+    st.header("🧭 Evacuation Route & Safe Shelters")
+    st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
+
+    # Dropdown for user area selection
+    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
+
+    # Define data for each area
+    evacuation_data = {
+        "Andheri": {
+            "center": [19.1197, 72.8468],
+            "shelters": [
+                {"name": "Andheri East Relief Camp", "lat": 19.1135, "lon": 72.8697},
+                {"name": "Andheri Sports Complex Shelter", "lat": 19.1260, "lon": 72.8360},
+                {"name": "Vile Parle Community Hall", "lat": 19.1020, "lon": 72.8440},
+            ],
+            "route": [[19.1135, 72.8697], [19.1197, 72.8468], [19.1260, 72.8360]]
+        },
+        "Kurla": {
+            "center": [19.0722, 72.8780],
+            "shelters": [
+                {"name": "Kurla Relief Camp", "lat": 19.0722, "lon": 72.8780},
+                {"name": "Nehru Nagar High School Shelter", "lat": 19.0655, "lon": 72.8825},
+                {"name": "BKC Public Ground", "lat": 19.0665, "lon": 72.8550},
+            ],
+            "route": [[19.0655, 72.8825], [19.0722, 72.8780], [19.0665, 72.8550]]
+        },
+        "Bandra": {
+            "center": [19.0545, 72.8400],
+            "shelters": [
+                {"name": "Bandra West Shelter", "lat": 19.0580, "lon": 72.8340},
+                {"name": "St. Andrew’s Auditorium", "lat": 19.0575, "lon": 72.8370},
+                {"name": "Bandra Reclamation Ground", "lat": 19.0500, "lon": 72.8405},
+            ],
+            "route": [[19.0500, 72.8405], [19.0545, 72.8400], [19.0580, 72.8340]]
+        },
+        "Dadar": {
+            "center": [19.0176, 72.8562],
+            "shelters": [
+                {"name": "Shivaji Park Hall Shelter", "lat": 19.0201, "lon": 72.8371},
+                {"name": "Dadar Railway Camp", "lat": 19.0168, "lon": 72.8449},
+                {"name": "Portuguese Church Shelter", "lat": 19.0231, "lon": 72.8441},
+            ],
+            "route": [[19.0168, 72.8449], [19.0176, 72.8562], [19.0201, 72.8371]]
+        },
+        "Powai": {
+            "center": [19.1176, 72.9060],
+            "shelters": [
+                {"name": "IIT Bombay Main Ground Shelter", "lat": 19.1334, "lon": 72.9133},
+                {"name": "Powai Lake View Relief Zone", "lat": 19.1102, "lon": 72.9053},
+                {"name": "Hiranandani Public School Shelter", "lat": 19.1213, "lon": 72.9120},
+            ],
+            "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
+        }
+    }
+
+    # Generate map dynamically based on selected area
+    data = evacuation_data[area]
+    m = folium.Map(location=data["center"], zoom_start=13)
+
+    # Add shelters as markers
+    for s in data["shelters"]:
+        folium.Marker(
+            [s["lat"], s["lon"]],
+            popup=s["name"],
+            icon=folium.Icon(color="green", icon="home")
+        ).add_to(m)
+
+    # Draw example route
+    folium.PolyLine(
+        locations=data["route"],
+        color="blue",
+        weight=3,
+        opacity=0.7,
+        tooltip="Recommended Evacuation Path"
+    ).add_to(m)
+
+    # Display interactive map
+    st_folium(m, width=700, height=500)
+
+    # Extra info below map
+    st.markdown(
+        "<p style='text-align:center; font-size:16px; color:gray;'>"
+        "📍 Always follow official local evacuation orders and stay informed via government alerts."
+        "</p>",
+        unsafe_allow_html=True
+    )

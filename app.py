@@ -223,7 +223,7 @@ safety_guide = {
 st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
-tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood Safety Guide"])
+tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood Safety Guide", "🚨 Emergency Helplines"])
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
@@ -301,3 +301,40 @@ with tabs[2]:
             st.markdown(f"**During Flood:** {guide['During']}")
             st.markdown(f"**After Flood:** {guide['After']}")
             break
+            
+# ---------------- TAB 4 ----------------
+with tabs[3]:
+    st.header("🚨 Emergency Helplines & Disaster Contacts")
+    st.write("In case of a flood or any severe weather emergency, contact the following helplines immediately.")
+
+    st.markdown("### 📞 National Helplines")
+    st.markdown("""
+    - **National Disaster Management Authority (NDMA):** 011-26701700  
+    - **National Emergency Helpline (India):** 112  
+    - **Disaster Management Control Room:** 1078  
+    - **Fire & Rescue Services:** 101  
+    - **Ambulance:** 102 / 108  
+    """)
+
+    st.markdown("### 🌆 Mumbai-Specific Helplines")
+    st.markdown("""
+    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916  
+    - **Mumbai Police Helpline:** 100  
+    - **Mumbai Fire Brigade:** 101  
+    - **Mumbai Flood Helpline:** 1916 (Active during monsoon)  
+    - **Railway Helpline (for stranded passengers):** 139  
+    """)
+
+    st.markdown("### 🌐 Useful Websites")
+    st.markdown("""
+    - [National Disaster Management Authority (NDMA)](https://ndma.gov.in)  
+    - [Maharashtra State Disaster Management Authority](https://dmgroup.maharashtra.gov.in)  
+    - [IMD Weather Updates](https://mausam.imd.gov.in)  
+    - [BMC Disaster Management](https://portal.mcgm.gov.in)  
+    """)
+
+    st.info(
+        "💡 **Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies."
+    )
+
+    st.success("Stay alert, stay safe, and help others when possible 💪")

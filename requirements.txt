@@ -3,5 +3,5 @@ pandas
 numpy
 scikit-learn
 joblib
-gspread
-oauth2client
+folium
+streamlit-folium

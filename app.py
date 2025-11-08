@@ -1,6 +1,6 @@
 #https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
 
-#Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
+# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
 
 # ==============================
 # 🌊 Flood Prediction AI Dashboard (Real Data + Random Forest)

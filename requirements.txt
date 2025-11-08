@@ -1,3 +1,4 @@
+# --- Core Streamlit App Dependencies ---
 streamlit
 pandas
 numpy
@@ -5,3 +6,10 @@ scikit-learn
 joblib
 folium
 streamlit-folium
+
+# --- For Data Fetching ---
+requests
+
+# --- For Visualization & Feature Importance Plot ---
+matplotlib
+seaborn

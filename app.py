@@ -9,16 +9,20 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 import joblib
 import folium
 from streamlit_folium import st_folium
 
 # =====================================
-# 🔸 SIMULATED MODEL TRAINING (Random data)
+# 🔸 SIMULATED MODEL TRAINING (Random Forest)
 # =====================================
+from sklearn.ensemble import RandomForestRegressor
+
 np.random.seed(42)
 data_size = 500
+
+# Generate sample data
 rainfall = np.random.uniform(50, 400, data_size)      # mm
 humidity = np.random.uniform(40, 100, data_size)      # %
 temperature = np.random.uniform(20, 40, data_size)    # °C
@@ -34,13 +38,21 @@ df = pd.DataFrame({
     'Flood Risk (%)': flood_risk
 })
 
+# Train Random Forest Model
 X = df[['Rainfall', 'Humidity', 'Temperature', 'Soil Moisture']]
 y = df['Flood Risk (%)']
-model = LinearRegression()
+
+model = RandomForestRegressor(
+    n_estimators=200,
+    random_state=42,
+    max_depth=10,
+    min_samples_split=4,
+    min_samples_leaf=2
+)
 model.fit(X, y)
 joblib.dump(model, "flood_model.pkl")
 
-# Load model
+# Load trained model
 model = joblib.load("flood_model.pkl")
 
 # =====================================

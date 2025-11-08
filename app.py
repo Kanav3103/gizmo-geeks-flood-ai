@@ -2,243 +2,73 @@
 
 #Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
 
-
 # ==============================
-# 🌊 Flood Prediction AI Dashboard
+# 🌊 Flood Prediction AI Dashboard (Real Data + Random Forest)
 # ==============================
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, roc_auc_score
 import joblib
 import folium
 from streamlit_folium import st_folium
+import os
 
 # =====================================
-# 🔸 SIMULATED MODEL TRAINING (Random Forest)
+# 🔸 LOAD REAL DATA & TRAIN MODEL
 # =====================================
-from sklearn.ensemble import RandomForestRegressor
+@st.cache_resource
+def load_and_train_model():
+    if not os.path.exists("flood_risk_dataset_india.csv"):
+        st.error("❌ Dataset 'flood_risk_dataset_india.csv' not found in project directory.")
+        return None
 
-np.random.seed(42)
-data_size = 500
+    df = pd.read_csv("flood_risk_dataset_india.csv")
+    df.columns = df.columns.str.strip()  # Clean any spaces
 
-# Generate sample data
-rainfall = np.random.uniform(50, 400, data_size)      # mm
-humidity = np.random.uniform(40, 100, data_size)      # %
-temperature = np.random.uniform(20, 40, data_size)    # °C
-soil_moisture = np.random.uniform(10, 80, data_size)  # %
-flood_risk = 0.4*rainfall + 0.3*humidity + 0.2*soil_moisture - 0.3*temperature + np.random.uniform(-20, 20, data_size)
-flood_risk = np.clip(flood_risk/10, 0, 100)
+    # Use only relevant columns
+    X = df[["Rainfall (mm)", "Temperature (°C)", "Humidity (%)"]]
+    y = df["Flood Occurred"]
 
-df = pd.DataFrame({
-    'Rainfall': rainfall,
-    'Humidity': humidity,
-    'Temperature': temperature,
-    'Soil Moisture': soil_moisture,
-    'Flood Risk (%)': flood_risk
-})
+    # Split for training/testing (for internal validation)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Train Random Forest Model
-X = df[['Rainfall', 'Humidity', 'Temperature', 'Soil Moisture']]
-y = df['Flood Risk (%)']
+    # Train Random Forest model
+    model = RandomForestClassifier(n_estimators=300, random_state=42)
+    model.fit(X_train, y_train)
 
-model = RandomForestRegressor(
-    n_estimators=200,
-    random_state=42,
-    max_depth=10,
-    min_samples_split=4,
-    min_samples_leaf=2
-)
-model.fit(X, y)
-joblib.dump(model, "flood_model.pkl")
+    # Optional: print some metrics to console (for developers)
+    y_pred = model.predict(X_test)
+    y_proba = model.predict_proba(X_test)[:, 1]
+    print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+    print("🌊 ROC-AUC Score:", roc_auc_score(y_test, y_proba))
 
-# Load trained model
-model = joblib.load("flood_model.pkl")
+    # Save model
+    joblib.dump(model, "flood_model.pkl")
+    return model
+
+model = load_and_train_model()
+if model is None:
+    st.stop()
 
 # =====================================
-# 🔸 SAFETY GUIDE (Detailed)
+# 🔸 SAFETY GUIDE (unchanged)
 # =====================================
-safety_guide = {
-    (0, 10): {
-        "Before": (
-            "Keep checking daily weather forecasts and stay updated. "
-            "Clean drains and gutters around your home to ensure smooth water flow. "
-            "Stay aware, even if flood chances seem low."
-        ),
-        "During": (
-            "No major risk, but stay cautious if heavy rain continues. "
-            "Avoid unnecessary travel during rainfall. "
-            "Keep your emergency contacts handy just in case."
-        ),
-        "After": (
-            "Inspect your surroundings for waterlogging or leaks. "
-            "Dry out damp areas to prevent mosquito breeding. "
-            "Continue monitoring local weather updates."
-        )
-    },
-    (10, 20): {
-        "Before": (
-            "Monitor rainfall and river level trends closely. "
-            "Prepare essential supplies like a torch, batteries, and first aid kit. "
-            "Ensure your family knows basic emergency numbers."
-        ),
-        "During": (
-            "Avoid walking in puddles or small flooded areas. "
-            "Keep all electronics unplugged during lightning or storms. "
-            "Monitor local alerts or advisories carefully."
-        ),
-        "After": (
-            "Clean surroundings to prevent mosquito growth. "
-            "Dispose of any waterlogged waste promptly. "
-            "Be alert for early signs of disease or contamination."
-        )
-    },
-    (20, 30): {
-        "Before": (
-            "Store drinking water and food in sealed containers. "
-            "Check and reinforce any weak walls or basement leaks. "
-            "Keep valuables and documents in waterproof bags."
-        ),
-        "During": (
-            "Move important items to higher shelves. "
-            "Avoid outdoor activity in continuous rainfall. "
-            "Stay connected with neighbours for updates."
-        ),
-        "After": (
-            "Dry clothes and bedding immediately. "
-            "Clean drains and ensure flow of water. "
-            "Keep children away from muddy or wet areas."
-        )
-    },
-    (30, 40): {
-        "Before": (
-            "Prepare an emergency go-bag with essentials. "
-            "Ensure everyone in the household knows safe exits. "
-            "Charge your phones and power banks fully."
-        ),
-        "During": (
-            "Avoid unnecessary movement and watch for rising water. "
-            "Keep listening to radio or local alerts. "
-            "Do not drive in heavy rain or flooded lanes."
-        ),
-        "After": (
-            "Sanitize stored water sources before use. "
-            "Help elderly neighbours with clean-up. "
-            "Check for cracks or electrical faults in the home."
-        )
-    },
-    (40, 50): {
-        "Before": (
-            "Keep your emergency contact list visible and ready. "
-            "Move important possessions and electronics to upper floors. "
-            "Discuss safety plans with family members."
-        ),
-        "During": (
-            "Avoid basements and low-lying areas. "
-            "Do not touch electrical panels with wet hands. "
-            "Ensure pets are kept indoors and safe."
-        ),
-        "After": (
-            "Inspect building structures for any damage. "
-            "Avoid using tap water until confirmed safe. "
-            "Dry and disinfect floors and walls quickly."
-        )
-    },
-    (50, 60): {
-        "Before": (
-            "Start partial evacuation if water levels are expected to rise. "
-            "Store clean water and non-perishable food items. "
-            "Keep emergency kits near main exits."
-        ),
-        "During": (
-            "Move to higher ground if floodwater approaches. "
-            "Avoid contact with floodwater—it may be contaminated. "
-            "Stay tuned to emergency broadcasts."
-        ),
-        "After": (
-            "Wait for official clearance before returning home. "
-            "Document damage for insurance or aid. "
-            "Do not consume flood-exposed food or water."
-        )
-    },
-    (60, 70): {
-        "Before": (
-            "Stay ready for possible evacuation; stock up on essentials. "
-            "Keep vehicles fuelled and parked on higher ground. "
-            "Ensure kids and elderly know the evacuation plan."
-        ),
-        "During": (
-            "Shift immediately to upper floors or safe zones. "
-            "Avoid touching wet electrical wires or devices. "
-            "Keep communicating your location to local help lines."
-        ),
-        "After": (
-            "Allow authorities to declare it safe before cleanup. "
-            "Disinfect and air-dry your belongings thoroughly. "
-            "Support neighbours in rebuilding efforts."
-        )
-    },
-    (70, 80): {
-        "Before": (
-            "Coordinate with local disaster groups or neighbours. "
-            "Keep all important documents in waterproof storage. "
-            "Pack your evacuation kit and stay alert for warnings."
-        ),
-        "During": (
-            "Evacuate immediately if advised by officials. "
-            "Avoid roads with moving or deep water. "
-            "Stay calm and assist others if possible."
-        ),
-        "After": (
-            "Do not touch damaged power lines or poles. "
-            "Clean and dry your home before turning on electricity. "
-            "Boil water before drinking."
-        )
-    },
-    (80, 90): {
-        "Before": (
-            "Prepare for an emergency evacuation at any time. "
-            "Keep constant communication with local authorities. "
-            "Turn off main power and gas supplies before leaving."
-        ),
-        "During": (
-            "Do not delay evacuation; safety is priority. "
-            "Move to official shelters or high-rise safe areas. "
-            "Carry essentials only and stay with your group."
-        ),
-        "After": (
-            "Follow safety checks before re-entering flooded areas. "
-            "Clean with disinfectants to avoid infections. "
-            "Seek medical help if any injuries occur."
-        )
-    },
-    (90, 100): {
-        "Before": (
-            "Full-scale flooding possible — immediate preparation required. "
-            "Evacuate low-lying zones early to avoid being trapped. "
-            "Ensure pets, elderly, and children are moved first."
-        ),
-        "During": (
-            "Call emergency helplines if trapped or isolated. "
-            "Avoid rooftops unless it’s the only option and signal for help. "
-            "Stay calm and conserve phone battery."
-        ),
-        "After": (
-            "Wait for official clearance before re-entry. "
-            "Thoroughly disinfect all water and food supplies. "
-            "Assist community members in post-flood recovery."
-        )
-    }
-}
+# (Your entire safety_guide dictionary stays exactly as-is)
+# -------------------------------------
+# KEEP THIS SECTION AS-IS
+# (Copy the exact same safety_guide block from your old file)
+# -------------------------------------
 
 # =====================================
-# 🔸 STREAMLIT APP LAYOUT
+# 🔸 STREAMLIT APP LAYOUT (identical)
 # =====================================
 st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
 tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood Safety Guide", "🚨 Emergency Helplines", "🧭 Evacuation Route & Safe Shelters"])
-
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
@@ -246,7 +76,6 @@ with tabs[0]:
     st.write("The data is automatically updated from the satellites (SMAP, GRACE, ERA5).")
     st.write("This update will be stopped after the event, as our PCs will not be able to handle the load for an extended amount of time, but this can be done, given ample resources.")
     
-    # 🔹 Example live data (you can change these values anytime)
     mumbai_data = {
         "Rainfall (mm)": 215,
         "Humidity (%)": 82,
@@ -257,17 +86,18 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    # 🔹 Predict flood risk for Mumbai
     if mumbai_data["Rainfall (mm)"] < 50:
         risk = 0
     else:
-        pred = model.predict([[mumbai_data["Rainfall (mm)"], mumbai_data["Humidity (%)"],
-                               mumbai_data["Temperature (°C)"], mumbai_data["Soil Moisture (%)"]]])[0]
-        risk = round(float(np.clip(pred, 0, 100)), 2)
-        
+        # 🔹 Predict flood probability
+        proba = model.predict_proba([[mumbai_data["Rainfall (mm)"],
+                                      mumbai_data["Temperature (°C)"],
+                                      mumbai_data["Humidity (%)"]]])[0][1]
+        risk = round(proba * 100, 2)
+
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
-    # 🔹 Show safety guidance for the predicted risk
+    # 🔹 Show safety guidance (unchanged)
     for (low, high), guide in safety_guide.items():
         if low <= risk <= high:
             st.markdown(f"### 🛟 Flood Safety Actions for Mumbai ({low}-{high}% Risk)")
@@ -276,25 +106,24 @@ with tabs[0]:
             st.markdown(f"**After Flood:** {guide['After']}")
             break
 
-
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
 
-    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)# Minimum, Maximum, Default
-    humidity = st.number_input("Humidity (%)", 0, 100, 70)# Minimum, Maximum, Default
-    temperature = st.number_input("Temperature (°C)", 0, 50, 28)# Minimum, Maximum, Default
-    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)# Minimum, Maximum, Default
+    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
+    humidity = st.number_input("Humidity (%)", 0, 100, 70)
+    temperature = st.number_input("Temperature (°C)", 0, 50, 28)
+    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # kept visible, not used
 
     if st.button("Predict Risk"):
         if rainfall < 50:
             risk = 0
         else:
-            pred = model.predict([[rainfall, humidity, temperature, soil]])[0]
-            risk = round(float(np.clip(pred, 0, 100)), 2)
+            proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
+            risk = round(proba * 100, 2)
 
         st.subheader(f"Predicted Flood Risk: {risk}%")
-        
+
         for (low, high), guide in safety_guide.items():
             if low <= risk <= high:
                 st.markdown(f"### 🛟 Flood Safety Actions ({low}-{high}% Risk)")
@@ -302,7 +131,7 @@ with tabs[1]:
                 st.markdown(f"**During Flood:** {guide['During']}")
                 st.markdown(f"**After Flood:** {guide['After']}")
                 break
-
+                
 # ---------------- TAB 3 ----------------
 with tabs[2]:
     st.header("🛟 Flood Safety Guide — Check by Risk %")

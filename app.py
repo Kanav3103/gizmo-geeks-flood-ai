@@ -28,7 +28,7 @@ def load_and_train_model():
         return None
 
     # Load dataset
-    df = pd.read_csv(dataset_path)
+    df = pd.read_csv(dataset_path, encoding='latin1')
     df.columns = df.columns.str.strip()  # remove hidden spaces
 
     # Ensure correct columns exist

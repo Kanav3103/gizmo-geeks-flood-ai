@@ -39,7 +39,7 @@ def load_and_train_model():
     model.fit(X_train, y_train)
 
    # Calibrate probabilities for better risk prediction
-    calibrated_model = CalibratedClassifierCV(base_estimator=model, cv=5)
+    calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
     # Evaluate

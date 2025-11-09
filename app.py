@@ -47,7 +47,7 @@ def load_and_train_model():
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
     # Calibrate probabilities to make them more realistic
-    calibrated_model = CalibratedClassifierCV(base_estimator=model, cv=5)
+    calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
     # Save and return calibrated model

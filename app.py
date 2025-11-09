@@ -17,8 +17,6 @@ import folium
 from streamlit_folium import st_folium
 import os
 
-st.write(list(df.columns))  # or print(list(df.columns))
-
 # =====================================
 # 🔸 LOAD REAL DATA & TRAIN MODEL
 # =====================================

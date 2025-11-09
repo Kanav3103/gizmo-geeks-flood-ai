@@ -14,7 +14,8 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 import joblib
 import folium
 from streamlit_folium import st_folium
-import osfrom sklearn.calibration import CalibratedClassifierCV
+import os
+from sklearn.calibration import CalibratedClassifierCV
 
 # =====================================
 # 🔸 LOAD REAL DATA & TRAIN MODEL

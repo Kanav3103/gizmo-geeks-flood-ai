@@ -312,4 +312,3 @@ with tabs[4]:
 
     folium.PolyLine(data["route"], color="blue", weight=3, opacity=0.7).add_to(m)
     st_folium(m, width=700, height=500)
-``

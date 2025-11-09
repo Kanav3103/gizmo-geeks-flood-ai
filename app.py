@@ -22,38 +22,48 @@ import os
 # =====================================
 @st.cache_resource
 def load_and_train_model():
-    if not os.path.exists("flood_risk_dataset_india.csv"):
-        st.error("❌ Dataset 'flood_risk_dataset_india.csv' not found in project directory.")
+    dataset_path = "FloodRiskIndia.csv"
+    if not os.path.exists(dataset_path):
+        st.error(f"❌ Dataset '{dataset_path}' not found in project directory.")
         return None
 
-    df = pd.read_csv("flood_risk_dataset_india.csv")
+    # Load dataset
+    df = pd.read_csv(dataset_path)
     df.columns = df.columns.str.strip()  # remove hidden spaces
 
-    # Use your real columns
-    X = df[["Rainfall (mm)", "Temperature (°C)", "Humidity (%)"]]
+    # Ensure correct columns exist
+    required_columns = ["Rainfall(mm)", "Temperature(°C)", "Humidity(%)", "Flood Occurred"]
+    for col in required_columns:
+        if col not in df.columns:
+            st.error(f"❌ Column '{col}' missing in dataset!")
+            return None
+
+    # Features and target
+    X = df[["Rainfall(mm)", "Temperature(°C)", "Humidity(%)"]]
     y = df["Flood Occurred"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Split into train and test sets (stratified to preserve class balance)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
+    # Train Random Forest Classifier
     model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
 
-    # Predict on test set
+    # Evaluate model
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
-
-    # Print metrics
     print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
-    # Calibrate probabilities to make them more realistic
+    # Calibrate probabilities to get realistic flood risk percentages
     calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
-    # Save and return calibrated model
+    # Save model
     joblib.dump(calibrated_model, "flood_model.pkl")
     return calibrated_model
 
+# Load the model
 model = load_and_train_model()
 if model is None:
     st.stop()

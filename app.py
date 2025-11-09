@@ -28,33 +28,22 @@ def load_and_train_model():
         return None
 
     # Read CSV safely with encoding
-    df = pd.read_csv(dataset_path, encoding='utf-8')  # utf-8 handles BOM better
-    # Clean column names: strip spaces, remove backslashes and BOM
-    df.columns = (
-        df.columns
-        .str.strip()                     # remove leading/trailing spaces
-        .str.replace('\\', '', regex=False)  # remove backslashes
-        .str.replace('\ufeff', '', regex=False)  # remove BOM if present
-        .str.replace('\n', '', regex=False)     # remove newline if present
-    )
-
-    # Debug: see what columns Pandas sees
-    st.write("✅ Columns detected:", list(df.columns))
-
+    df = pd.read_csv(dataset_path, encoding='latin1')
+    # Clean column names: strip spaces and remove backslashes
+    df.columns = df.columns.str.strip().str.replace('\\', '', regex=False)
+    
     # Now select features and target safely
     required_cols = ["Rainfall(mm)", "Humidity(%)", "Temperature(C)", "Flood Occurred"]
     missing_cols = [col for col in required_cols if col not in df.columns]
     if missing_cols:
         st.error(f"❌ Required columns missing: {missing_cols}")
         return None
-
+    
     X = df[["Rainfall(mm)", "Humidity(%)", "Temperature(C)"]]
     y = df["Flood Occurred"]
 
-    # Split dataset
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Train Random Forest Classifier
     model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
 
@@ -62,19 +51,18 @@ def load_and_train_model():
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
 
-    # Print metrics in terminal (optional)
+    # Print metrics
     print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
-    # Calibrate probabilities
+    # Calibrate probabilities to make them more realistic
     calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
-    # Save model
+    # Save and return calibrated model
     joblib.dump(calibrated_model, "flood_model.pkl")
     return calibrated_model
 
-# Load model
 model = load_and_train_model()
 if model is None:
     st.stop()
@@ -84,54 +72,174 @@ if model is None:
 # =====================================
 safety_guide = {
     (0, 10): {
-        "Before": "Keep checking daily weather forecasts and stay updated. Clean drains and gutters around your home to ensure smooth water flow. Stay aware, even if flood chances seem low.",
-        "During": "No major risk, but stay cautious if heavy rain continues. Avoid unnecessary travel during rainfall. Keep your emergency contacts handy just in case.",
-        "After": "Inspect your surroundings for waterlogging or leaks. Dry out damp areas to prevent mosquito breeding. Continue monitoring local weather updates.",
+        "Before": (
+            "Keep checking daily weather forecasts and stay updated. "
+            "Clean drains and gutters around your home to ensure smooth water flow. "
+            "Stay aware, even if flood chances seem low."
+        ),
+        "During": (
+            "No major risk, but stay cautious if heavy rain continues. "
+            "Avoid unnecessary travel during rainfall. "
+            "Keep your emergency contacts handy just in case."
+        ),
+        "After": (
+            "Inspect your surroundings for waterlogging or leaks. "
+            "Dry out damp areas to prevent mosquito breeding. "
+            "Continue monitoring local weather updates."
+        ),
     },
     (10, 20): {
-        "Before": "Monitor rainfall and river level trends closely. Prepare essential supplies like a torch, batteries, and first aid kit. Ensure your family knows basic emergency numbers.",
-        "During": "Avoid walking in puddles or small flooded areas. Keep all electronics unplugged during lightning or storms. Monitor local alerts or advisories carefully.",
-        "After": "Clean surroundings to prevent mosquito growth. Dispose of any waterlogged waste promptly. Be alert for early signs of disease or contamination.",
+        "Before": (
+            "Monitor rainfall and river level trends closely. "
+            "Prepare essential supplies like a torch, batteries, and first aid kit. "
+            "Ensure your family knows basic emergency numbers."
+        ),
+        "During": (
+            "Avoid walking in puddles or small flooded areas. "
+            "Keep all electronics unplugged during lightning or storms. "
+            "Monitor local alerts or advisories carefully."
+        ),
+        "After": (
+            "Clean surroundings to prevent mosquito growth. "
+            "Dispose of any waterlogged waste promptly. "
+            "Be alert for early signs of disease or contamination."
+        ),
     },
     (20, 30): {
-        "Before": "Store drinking water and food in sealed containers. Check and reinforce any weak walls or basement leaks. Keep valuables and documents in waterproof bags.",
-        "During": "Move important items to higher shelves. Avoid outdoor activity in continuous rainfall. Stay connected with neighbours for updates.",
-        "After": "Dry clothes and bedding immediately. Clean drains and ensure flow of water. Keep children away from muddy or wet areas.",
+        "Before": (
+            "Store drinking water and food in sealed containers. "
+            "Check and reinforce any weak walls or basement leaks. "
+            "Keep valuables and documents in waterproof bags."
+        ),
+        "During": (
+            "Move important items to higher shelves. "
+            "Avoid outdoor activity in continuous rainfall. "
+            "Stay connected with neighbours for updates."
+        ),
+        "After": (
+            "Dry clothes and bedding immediately. "
+            "Clean drains and ensure flow of water. "
+            "Keep children away from muddy or wet areas."
+        ),
     },
     (30, 40): {
-        "Before": "Prepare an emergency go-bag with essentials. Ensure everyone in the household knows safe exits. Charge your phones and power banks fully.",
-        "During": "Avoid unnecessary movement and watch for rising water. Keep listening to radio or local alerts. Do not drive in heavy rain or flooded lanes.",
-        "After": "Sanitize stored water sources before use. Help elderly neighbours with clean-up. Check for cracks or electrical faults in the home.",
+        "Before": (
+            "Prepare an emergency go-bag with essentials. "
+            "Ensure everyone in the household knows safe exits. "
+            "Charge your phones and power banks fully."
+        ),
+        "During": (
+            "Avoid unnecessary movement and watch for rising water. "
+            "Keep listening to radio or local alerts. "
+            "Do not drive in heavy rain or flooded lanes."
+        ),
+        "After": (
+            "Sanitize stored water sources before use. "
+            "Help elderly neighbours with clean-up. "
+            "Check for cracks or electrical faults in the home."
+        ),
     },
     (40, 50): {
-        "Before": "Keep your emergency contact list visible and ready. Move important possessions and electronics to upper floors. Discuss safety plans with family members.",
-        "During": "Avoid basements and low-lying areas. Do not touch electrical panels with wet hands. Ensure pets are kept indoors and safe.",
-        "After": "Inspect building structures for any damage. Avoid using tap water until confirmed safe. Dry and disinfect floors and walls quickly.",
+        "Before": (
+            "Keep your emergency contact list visible and ready. "
+            "Move important possessions and electronics to upper floors. "
+            "Discuss safety plans with family members."
+        ),
+        "During": (
+            "Avoid basements and low-lying areas. "
+            "Do not touch electrical panels with wet hands. "
+            "Ensure pets are kept indoors and safe."
+        ),
+        "After": (
+            "Inspect building structures for any damage. "
+            "Avoid using tap water until confirmed safe. "
+            "Dry and disinfect floors and walls quickly."
+        ),
     },
     (50, 60): {
-        "Before": "Start partial evacuation if water levels are expected to rise. Store clean water and non-perishable food items. Keep emergency kits near main exits.",
-        "During": "Move to higher ground if floodwater approaches. Avoid contact with floodwater—it may be contaminated. Stay tuned to emergency broadcasts.",
-        "After": "Wait for official clearance before returning home. Document damage for insurance or aid. Do not consume flood-exposed food or water.",
+        "Before": (
+            "Start partial evacuation if water levels are expected to rise. "
+            "Store clean water and non-perishable food items. "
+            "Keep emergency kits near main exits."
+        ),
+        "During": (
+            "Move to higher ground if floodwater approaches. "
+            "Avoid contact with floodwater—it may be contaminated. "
+            "Stay tuned to emergency broadcasts."
+        ),
+        "After": (
+            "Wait for official clearance before returning home. "
+            "Document damage for insurance or aid. "
+            "Do not consume flood-exposed food or water."
+        ),
     },
     (60, 70): {
-        "Before": "Stay ready for possible evacuation; stock up on essentials. Keep vehicles fuelled and parked on higher ground. Ensure kids and elderly know the evacuation plan.",
-        "During": "Shift immediately to upper floors or safe zones. Avoid touching wet electrical wires or devices. Keep communicating your location to local help lines.",
-        "After": "Allow authorities to declare it safe before cleanup. Disinfect and air-dry your belongings thoroughly. Support neighbours in rebuilding efforts.",
+        "Before": (
+            "Stay ready for possible evacuation; stock up on essentials. "
+            "Keep vehicles fuelled and parked on higher ground. "
+            "Ensure kids and elderly know the evacuation plan."
+        ),
+        "During": (
+            "Shift immediately to upper floors or safe zones. "
+            "Avoid touching wet electrical wires or devices. "
+            "Keep communicating your location to local help lines."
+        ),
+        "After": (
+            "Allow authorities to declare it safe before cleanup. "
+            "Disinfect and air-dry your belongings thoroughly. "
+            "Support neighbours in rebuilding efforts."
+        ),
     },
     (70, 80): {
-        "Before": "Coordinate with local disaster groups or neighbours. Keep all important documents in waterproof storage. Pack your evacuation kit and stay alert for warnings.",
-        "During": "Evacuate immediately if advised by officials. Avoid roads with moving or deep water. Stay calm and assist others if possible.",
-        "After": "Do not touch damaged power lines or poles. Clean and dry your home before turning on electricity. Boil water before drinking.",
+        "Before": (
+            "Coordinate with local disaster groups or neighbours. "
+            "Keep all important documents in waterproof storage. "
+            "Pack your evacuation kit and stay alert for warnings."
+        ),
+        "During": (
+            "Evacuate immediately if advised by officials. "
+            "Avoid roads with moving or deep water. "
+            "Stay calm and assist others if possible."
+        ),
+        "After": (
+            "Do not touch damaged power lines or poles. "
+            "Clean and dry your home before turning on electricity. "
+            "Boil water before drinking."
+        ),
     },
     (80, 90): {
-        "Before": "Prepare for an emergency evacuation at any time. Keep constant communication with local authorities. Turn off main power and gas supplies before leaving.",
-        "During": "Do not delay evacuation; safety is priority. Move to official shelters or high-rise safe areas. Carry essentials only and stay with your group.",
-        "After": "Follow safety checks before re-entering flooded areas. Clean with disinfectants to avoid infections. Seek medical help if any injuries occur.",
+        "Before": (
+            "Prepare for an emergency evacuation at any time. "
+            "Keep constant communication with local authorities. "
+            "Turn off main power and gas supplies before leaving."
+        ),
+        "During": (
+            "Do not delay evacuation; safety is priority. "
+            "Move to official shelters or high-rise safe areas. "
+            "Carry essentials only and stay with your group."
+        ),
+        "After": (
+            "Follow safety checks before re-entering flooded areas. "
+            "Clean with disinfectants to avoid infections. "
+            "Seek medical help if any injuries occur."
+        ),
     },
     (90, 100): {
-        "Before": "Full-scale flooding possible — immediate preparation required. Evacuate low-lying zones early to avoid being trapped. Ensure pets, elderly, and children are moved first.",
-        "During": "Call emergency helplines if trapped or isolated. Avoid rooftops unless it’s the only option and signal for help. Stay calm and conserve phone battery.",
-        "After": "Wait for official clearance before re-entry. Thoroughly disinfect all water and food supplies. Assist community members in post-flood recovery.",
+        "Before": (
+            "Full-scale flooding possible — immediate preparation required. "
+            "Evacuate low-lying zones early to avoid being trapped. "
+            "Ensure pets, elderly, and children are moved first."
+        ),
+        "During": (
+            "Call emergency helplines if trapped or isolated. "
+            "Avoid rooftops unless it’s the only option and signal for help. "
+            "Stay calm and conserve phone battery."
+        ),
+        "After": (
+            "Wait for official clearance before re-entry. "
+            "Thoroughly disinfect all water and food supplies. "
+            "Assist community members in post-flood recovery."
+        ),
     },
 }
 
@@ -157,7 +265,7 @@ with tabs[0]:
     mumbai_data = {
         "Rainfall(mm)": 215,
         "Humidity(%)": 82,
-        "Temperature(C)": 29,
+        "Temperature °C": 29,
         "Soil Moisture (%)": 55
     }
     df_mumbai = pd.DataFrame([mumbai_data])
@@ -166,7 +274,7 @@ with tabs[0]:
     # Clip values to dataset range
     rainfall = np.clip(mumbai_data["Rainfall(mm)"], 0, 350)
     humidity = np.clip(mumbai_data["Humidity(%)"], 30, 100)
-    temp = np.clip(mumbai_data["Temperature(C)"], 15, 45)
+    temp = np.clip(mumbai_data["Temperature °C"], 15, 45)
 
     proba = model.predict_proba([[rainfall, temp, humidity]])[0][1]
     risk = round(proba * 100, 2)
@@ -217,38 +325,28 @@ with tabs[2]:
 # ---------------- TAB 4 ----------------
 with tabs[3]:
     st.header("🚨 Emergency Helplines & Disaster Contacts")
-    st.write("In case of a flood or any severe weather emergency, contact the following helplines immediately.")
-
-    st.markdown("### 📞 National Helplines")
     st.markdown("""
-    - **National Disaster Management Authority (NDMA):** 011-26701700
-    - **National Emergency Helpline (India):** 112
-    - **Disaster Management Control Room:** 1078
-    - **Fire & Rescue Services:** 101
-    - **Ambulance:** 102 / 108
-    """)
+    ### 📞 National Helplines
+    - NDMA: 011-26701700
+    - National Emergency: 112
+    - Disaster Control Room: 1078
+    - Fire & Rescue: 101
+    - Ambulance: 102 / 108
 
-    st.markdown("### 🌆 Mumbai-Specific Helplines")
-    st.markdown("""
-    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916
-    - **Mumbai Police Helpline:** 100
-    - **Mumbai Fire Brigade:** 101
-    - **Mumbai Flood Helpline:** 1916 (Active during monsoon)
-    - **Railway Helpline (for stranded passengers):** 139
-    """)
+    ### 🌆 Mumbai-Specific Helplines
+    - BMC Control Room: 1916
+    - Mumbai Police: 100
+    - Mumbai Fire Brigade: 101
+    - Mumbai Flood Helpline: 1916
+    - Railway Helpline: 139
 
-    st.markdown("### 🌐 Useful Websites")
-    st.markdown("""
+    ### 🌐 Useful Websites
     - [National Disaster Management Authority (NDMA)](https://ndma.gov.in)
     - [Maharashtra State Disaster Management Authority](https://dmgroup.maharashtra.gov.in)
     - [IMD Weather Updates](https://mausam.imd.gov.in)
     - [BMC Disaster Management](https://portal.mcgm.gov.in)
     """)
-
-    st.info(
-        "💡 **Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies."
-    )
-    st.success("Stay alert, stay safe, and help others when possible 💪")
+    st.info("💡 Always follow official instructions, keep phones charged, and avoid spreading rumours during emergencies.")
 
 # ---------------- TAB 5 ----------------
 with tabs[4]:

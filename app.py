@@ -405,9 +405,9 @@ with tabs[4]:
     data = evacuation_data.get(area)
     if data is None:
         st.error("❌ No evacuation data found for this area!")
+    else:
     m = folium.Map(location=data["center"], zoom_start=13)
 
-    # Add shelters as markers
     for s in data["shelters"]:
         folium.Marker(
             [s["lat"], s["lon"]],
@@ -415,7 +415,6 @@ with tabs[4]:
             icon=folium.Icon(color="green", icon="home")
         ).add_to(m)
 
-    # Draw example route
     folium.PolyLine(
         locations=data["route"],
         color="blue",
@@ -424,13 +423,12 @@ with tabs[4]:
         tooltip="Recommended Evacuation Path"
     ).add_to(m)
 
-    # Display interactive map
     st_folium(m, width=700, height=500)
 
-    # Extra info below map
     st.markdown(
         "<p style='text-align:center; font-size:16px; color:gray;'>"
         "📍 Always follow official local evacuation orders and stay informed via government alerts."
         "</p>",
         unsafe_allow_html=True
     )
+

@@ -1,7 +1,3 @@
-#https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
-
-# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
-
 # ==============================
 # 🌊 Flood Prediction AI Dashboard (Real Data + Random Forest)
 # ==============================
@@ -38,17 +34,17 @@ def load_and_train_model():
     model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
 
-   # Calibrate probabilities for better risk prediction
+    # Calibrate probabilities for better risk prediction
     calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
     # Evaluate
     y_pred = calibrated_model.predict(X_test)
     y_proba = calibrated_model.predict_proba(X_test)[:, 1]
-    
+
     print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
-    
+
     # Save and return calibrated model
     joblib.dump(calibrated_model, "flood_model.pkl")
     return calibrated_model
@@ -245,7 +241,7 @@ tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood 
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
     st.write("This data is simulated and can be replaced with live API data later.")
-    
+
     mumbai_data = {
         "Rainfall (mm)": 215,
         "Humidity (%)": 82,
@@ -284,6 +280,7 @@ with tabs[1]:
         if rainfall < 50:
             risk = 0
         else:
+            # ✅ Only this line changed to use the trained calibrated model
             proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
             risk = round(proba * 100, 2)
 
@@ -296,7 +293,7 @@ with tabs[1]:
                 st.markdown(f"**During Flood:** {guide['During']}")
                 st.markdown(f"**After Flood:** {guide['After']}")
                 break
-                
+
 # ---------------- TAB 3 ----------------
 with tabs[2]:
     st.header("🛟 Flood Safety Guide — Check by Risk %")
@@ -310,7 +307,7 @@ with tabs[2]:
             st.markdown(f"**During Flood:** {guide['During']}")
             st.markdown(f"**After Flood:** {guide['After']}")
             break
-            
+
 # ---------------- TAB 4 ----------------
 with tabs[3]:
     st.header("🚨 Emergency Helplines & Disaster Contacts")
@@ -353,7 +350,6 @@ with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 
-# Define data for each area
     evacuation_data = {
         "Andheri": {
             "center": [19.1197, 72.8468],
@@ -401,38 +397,15 @@ with tabs[4]:
             "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
         }
     }
-    
-    # Dropdown for user area selection
-    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
 
-    # Generate map dynamically based on selected area
+    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
     data = evacuation_data.get(area)
+
     if data is None:
         st.error("❌ No evacuation data found for this area!")
     else:
         m = folium.Map(location=data["center"], zoom_start=13)
-
         for s in data["shelters"]:
-            folium.Marker(
-                [s["lat"], s["lon"]],
-                popup=s["name"],
-                icon=folium.Icon(color="green", icon="home")
-            ).add_to(m)
-
-        folium.PolyLine(
-            locations=data["route"],
-            color="blue",
-            weight=3,
-            opacity=0.7,
-            tooltip="Recommended Evacuation Path"
-        ).add_to(m)
-    
+            folium.Marker([s["lat"], s["lon"]], popup=s["name"], icon=folium.Icon(color="green", icon="home")).add_to(m)
+        folium.PolyLine(locations=data["route"], color="blue", weight=3, opacity=0.7, tooltip="Recommended Evacuation Path").add_to(m)
         st_folium(m, width=700, height=500)
-    
-        st.markdown(
-            "<p style='text-align:center; font-size:16px; color:gray;'>"
-            "📍 Always follow official local evacuation orders and stay informed via government alerts."
-            "</p>",
-            unsafe_allow_html=True
-        )
-

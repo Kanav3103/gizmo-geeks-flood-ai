@@ -34,17 +34,25 @@ def load_and_train_model():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    model = RandomForestClassifier(n_estimators=300, random_state=42)
+    model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
 
+    # Predict on test set
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
 
+    # Print metrics
     print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
-    joblib.dump(model, "flood_model.pkl")
-    return model
+    # Calibrate probabilities to make them more realistic
+    from sklearn.calibration import CalibratedClassifierCV
+    calibrated_model = CalibratedClassifierCV(base_estimator=model, cv=5)
+    calibrated_model.fit(X_train, y_train)
+
+    # Save and return calibrated model
+    joblib.dump(calibrated_model, "flood_model.pkl")
+    return calibrated_model
 
 model = load_and_train_model()
 if model is None:

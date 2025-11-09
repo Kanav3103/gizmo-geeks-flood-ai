@@ -27,43 +27,35 @@ def load_and_train_model():
         st.error(f"❌ Dataset '{dataset_path}' not found in project directory.")
         return None
 
-    # Load dataset
+    # Read CSV safely with encoding
     df = pd.read_csv(dataset_path, encoding='latin1')
     df.columns = df.columns.str.strip()  # remove hidden spaces
 
-    # Ensure correct columns exist
-    required_columns = ["Rainfall(mm)", "Temperature(°C)", "Humidity(%)", "Flood Occurred"]
-    for col in required_columns:
-        if col not in df.columns:
-            st.error(f"❌ Column '{col}' missing in dataset!")
-            return None
-
-    # Features and target
-    X = df[["Rainfall(mm)", "Temperature(°C)", "Humidity(%)"]]
+    # Use the exact column names in your CSV
+    X = df[["Rainfall(mm)", "Temperature °C", "Humidity(%)"]]
     y = df["Flood Occurred"]
 
-    # Split into train and test sets (stratified to preserve class balance)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Train Random Forest Classifier
     model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
 
-    # Evaluate model
+    # Predict on test set
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
+
+    # Print metrics
     print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
-    # Calibrate probabilities to get realistic flood risk percentages
+    # Calibrate probabilities to make them more realistic
     calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
-    # Save model
+    # Save and return calibrated model
     joblib.dump(calibrated_model, "flood_model.pkl")
     return calibrated_model
 
-# Load the model
 model = load_and_train_model()
 if model is None:
     st.stop()
@@ -264,20 +256,20 @@ with tabs[0]:
     st.write("This data is simulated and can be replaced with live API data later.")
 
     mumbai_data = {
-        "Rainfall (mm)": 215,
-        "Humidity (%)": 82,
-        "Temperature (°C)": 29,
+        "Rainfall(mm)": 215,
+        "Humidity(%)": 82,
+        "Temperature °C": 29,
         "Soil Moisture (%)": 55
     }
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    # Clamp to dataset range
-    rainfall_val = max(0, min(mumbai_data["Rainfall (mm)"], 350))
-    humidity_val = max(30, min(mumbai_data["Humidity (%)"], 100))
-    temperature_val = max(15, min(mumbai_data["Temperature (°C)"], 45))
+    # Clip values to dataset range
+    rainfall = np.clip(mumbai_data["Rainfall(mm)"], 0, 350)
+    humidity = np.clip(mumbai_data["Humidity(%)"], 30, 100)
+    temp = np.clip(mumbai_data["Temperature °C"], 15, 45)
 
-    proba = model.predict_proba([[rainfall_val, temperature_val, humidity_val]])[0][1]
+    proba = model.predict_proba([[rainfall, temp, humidity]])[0][1]
     risk = round(proba * 100, 2)
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
@@ -413,31 +405,11 @@ with tabs[4]:
     }
 
     area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
-    data = evacuation_data.get(area)
+    data = evacuation_data[area]
 
-    if data is None:
-        st.error("❌ No evacuation data found for this area!")
-    else:
-        m = folium.Map(location=data["center"], zoom_start=13)
-        for s in data["shelters"]:
-            folium.Marker(
-                [s["lat"], s["lon"]],
-                popup=s["name"],
-                icon=folium.Icon(color="green", icon="home")
-            ).add_to(m)
+    m = folium.Map(location=data["center"], zoom_start=13)
+    for shelter in data["shelters"]:
+        folium.Marker([shelter["lat"], shelter["lon"]], popup=shelter["name"], icon=folium.Icon(color="green")).add_to(m)
 
-        folium.PolyLine(
-            locations=data["route"],
-            color="blue",
-            weight=3,
-            opacity=0.7,
-            tooltip="Recommended Evacuation Path"
-        ).add_to(m)
-
-        st_folium(m, width=700, height=500)
-        st.markdown(
-            "<p style='text-align:center; font-size:16px; color:gray;'>"
-            "📍 Always follow official local evacuation orders and stay informed via government alerts."
-            "</p>",
-            unsafe_allow_html=True
-        )
+    folium.PolyLine(data["route"], color="blue", weight=3, opacity=0.7).add_to(m)
+    st_folium(m, width=700, height=500)

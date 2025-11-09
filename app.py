@@ -32,7 +32,7 @@ def load_and_train_model():
     df.columns = df.columns.str.strip()  # remove hidden spaces
 
     # Use the exact column names in your CSV
-    X = df[["Rainfall(mm)", "Temperature C", "Humidity(%)"]]
+    X = df[["Rainfall(mm)", "Temperature(C)", "Humidity(%)"]]
     y = df["Flood Occurred"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

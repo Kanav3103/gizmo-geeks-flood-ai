@@ -12,7 +12,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
 import joblib
-import folium
 from streamlit_folium import st_folium
 import os
 
@@ -26,26 +25,23 @@ def load_and_train_model():
         return None
 
     df = pd.read_csv("flood_risk_dataset_india.csv")
-    df.columns = df.columns.str.strip()  # Clean any spaces
+    df.columns = df.columns.str.strip()  # remove hidden spaces
 
-    # Use only relevant columns
+    # Use your real columns
     X = df[["Rainfall (mm)", "Temperature (°C)", "Humidity (%)"]]
     y = df["Flood Occurred"]
 
-    # Split for training/testing (for internal validation)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Train Random Forest model
     model = RandomForestClassifier(n_estimators=300, random_state=42)
     model.fit(X_train, y_train)
 
-    # Optional: print some metrics to console (for developers)
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
-    print("✅ Accuracy:", accuracy_score(y_test, y_pred))
-    print("🌊 ROC-AUC Score:", roc_auc_score(y_test, y_proba))
 
-    # Save model
+    print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
+    print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
+
     joblib.dump(model, "flood_model.pkl")
     return model
 
@@ -230,9 +226,8 @@ safety_guide = {
 }
 
 # =====================================
-# 🔸 STREAMLIT APP LAYOUT
+# 🔸 STREAMLIT UI
 # =====================================
-
 st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
@@ -241,8 +236,7 @@ tabs = st.tabs(["🌆 Mumbai Live Data", "🔍 Predict Flood Risk", "🛟 Flood 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
-    st.write("The data is automatically updated from the satellites (SMAP, GRACE, ERA5).")
-    st.write("This update will be stopped after the event, as our PCs will not be able to handle the load for an extended amount of time, but this can be done, given ample resources.")
+    st.write("This data is simulated and can be replaced with live API data later.")
     
     mumbai_data = {
         "Rainfall (mm)": 215,
@@ -257,7 +251,6 @@ with tabs[0]:
     if mumbai_data["Rainfall (mm)"] < 50:
         risk = 0
     else:
-        # 🔹 Predict flood probability
         proba = model.predict_proba([[mumbai_data["Rainfall (mm)"],
                                       mumbai_data["Temperature (°C)"],
                                       mumbai_data["Humidity (%)"]]])[0][1]
@@ -265,7 +258,6 @@ with tabs[0]:
 
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
-    # 🔹 Show safety guidance (unchanged)
     for (low, high), guide in safety_guide.items():
         if low <= risk <= high:
             st.markdown(f"### 🛟 Flood Safety Actions for Mumbai ({low}-{high}% Risk)")
@@ -281,7 +273,7 @@ with tabs[1]:
     rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
     humidity = st.number_input("Humidity (%)", 0, 100, 70)
     temperature = st.number_input("Temperature (°C)", 0, 50, 28)
-    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # kept visible, not used
+    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # not used
 
     if st.button("Predict Risk"):
         if rainfall < 50:

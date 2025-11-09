@@ -272,7 +272,12 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    proba = model.predict_proba([[mumbai_data["Rainfall (mm)"], mumbai_data["Temperature (°C)"], mumbai_data["Humidity (%)"]]])[0][1]
+    # Clamp to dataset range
+    rainfall_val = max(0, min(mumbai_data["Rainfall (mm)"], 350))
+    humidity_val = max(30, min(mumbai_data["Humidity (%)"], 100))
+    temperature_val = max(15, min(mumbai_data["Temperature (°C)"], 45))
+
+    proba = model.predict_proba([[rainfall_val, temperature_val, humidity_val]])[0][1]
     risk = round(proba * 100, 2)
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
@@ -287,17 +292,14 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
-    humidity = st.number_input("Humidity (%)", 0, 100, 70)
-    temperature = st.number_input("Temperature (°C)", 0, 50, 28)
+    rainfall = st.number_input("Rainfall (mm)", 0, 350, 200)
+    humidity = st.number_input("Humidity (%)", 30, 100, 70)
+    temperature = st.number_input("Temperature (°C)", 15, 45, 28)
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # not used
 
     if st.button("Predict Risk"):
-        if rainfall < 50:
-            risk = 0
-        else:
-            proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
-            risk = round(proba * 100, 2)
+        proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
+        risk = round(proba * 100, 2)
 
         st.subheader(f"Predicted Flood Risk: {risk}%")
         for (low, high), guide in safety_guide.items():

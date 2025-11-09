@@ -12,6 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
 import joblib
+import folium
 from streamlit_folium import st_folium
 import os
 
@@ -348,10 +349,7 @@ with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 
-    # Dropdown for user area selection
-    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
-
-    # Define data for each area
+# Define data for each area
     evacuation_data = {
         "Andheri": {
             "center": [19.1197, 72.8468],
@@ -399,9 +397,14 @@ with tabs[4]:
             "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
         }
     }
+    
+    # Dropdown for user area selection
+    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
 
     # Generate map dynamically based on selected area
-    data = evacuation_data[area]
+    data = evacuation_data.get(area)
+    if data is None:
+        st.error("❌ No evacuation data found for this area!")
     m = folium.Map(location=data["center"], zoom_start=13)
 
     # Add shelters as markers

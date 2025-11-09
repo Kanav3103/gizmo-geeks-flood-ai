@@ -406,29 +406,29 @@ with tabs[4]:
     if data is None:
         st.error("❌ No evacuation data found for this area!")
     else:
-    m = folium.Map(location=data["center"], zoom_start=13)
+        m = folium.Map(location=data["center"], zoom_start=13)
 
-    for s in data["shelters"]:
-        folium.Marker(
-            [s["lat"], s["lon"]],
-            popup=s["name"],
-            icon=folium.Icon(color="green", icon="home")
+        for s in data["shelters"]:
+            folium.Marker(
+                [s["lat"], s["lon"]],
+                popup=s["name"],
+                icon=folium.Icon(color="green", icon="home")
+            ).add_to(m)
+
+        folium.PolyLine(
+            locations=data["route"],
+            color="blue",
+            weight=3,
+            opacity=0.7,
+            tooltip="Recommended Evacuation Path"
         ).add_to(m)
-
-    folium.PolyLine(
-        locations=data["route"],
-        color="blue",
-        weight=3,
-        opacity=0.7,
-        tooltip="Recommended Evacuation Path"
-    ).add_to(m)
-
-    st_folium(m, width=700, height=500)
-
-    st.markdown(
-        "<p style='text-align:center; font-size:16px; color:gray;'>"
-        "📍 Always follow official local evacuation orders and stay informed via government alerts."
-        "</p>",
-        unsafe_allow_html=True
-    )
+    
+        st_folium(m, width=700, height=500)
+    
+        st.markdown(
+            "<p style='text-align:center; font-size:16px; color:gray;'>"
+            "📍 Always follow official local evacuation orders and stay informed via government alerts."
+            "</p>",
+            unsafe_allow_html=True
+        )
 

@@ -27,10 +27,17 @@ def load_and_train_model():
         st.error(f"❌ Dataset '{dataset_path}' not found in project directory.")
         return None
 
-    # Read CSV safely with encoding
-    df = pd.read_csv(dataset_path, encoding='latin1')
-    # Clean column names: strip spaces and remove backslashes
-    df.columns = df.columns.str.strip().str.replace('\\', '', regex=False)
+    # After reading CSV
+    df = pd.read_csv(dataset_path, encoding='utf-8-sig')  # handles BOM if present
+    
+    # Force rename columns to exact expected names
+    df.rename(columns={
+        df.columns[0]: "Rainfall(mm)",
+        df.columns[1]: "Humidity(%)",
+        df.columns[2]: "Temperature(C)",
+        df.columns[3]: "Flood Occurred"
+    }, inplace=True)
+
     
     # Now select features and target safely
     required_cols = ["Rainfall(mm)", "Humidity(%)", "Temperature(C)", "Flood Occurred"]

@@ -249,13 +249,10 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    if mumbai_data["Rainfall (mm)"] < 50:
-        risk = 0
-    else:
-        proba = model.predict_proba([[mumbai_data["Rainfall (mm)"],
-                                      mumbai_data["Temperature (°C)"],
-                                      mumbai_data["Humidity (%)"]]])[0][1]
-        risk = round(proba * 100, 2)
+    proba = model.predict_proba([[mumbai_data["Rainfall (mm)"],
+                                  mumbai_data["Temperature (°C)"],
+                                  mumbai_data["Humidity (%)"]]])[0][1]
+    risk = round(proba * 100, 2)
 
     st.subheader(f"Predicted Flood Risk: {risk}%")
 

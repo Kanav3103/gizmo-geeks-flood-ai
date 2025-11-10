@@ -1,15 +1,42 @@
-# ==============================
-# 🌊 Flood Prediction AI Dashboard (Simulated Formula-Based)
-# ==============================
+# =====================================================
+# 🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction Dashboard
+# =====================================================
+# by Kanav Chhabra & Team
+# Description:
+# A realistic-looking AI flood predictor that uses formula-based modeling to
+# simulate ML predictions, display live city flood data, and guide users with
+# safety and evacuation information.
+# =====================================================
+
 import streamlit as st
 import numpy as np
 import pandas as pd
+import time
 import folium
 from streamlit_folium import st_folium
 
-# =====================================
-# 🔸 CONSTANTS: feature names and max values
-# =====================================
+# =====================================================
+# TAB CONFIGURATION
+# =====================================================
+st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
+st.title("🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction System")
+st.markdown("### Smart flood risk estimation based on environmental conditions.")
+
+# =====================================================
+# "TRAINING" (Simulated)
+# =====================================================
+@st.cache_resource
+def load_and_train_model():
+    st.info("🤖 Training Flood AI model on 10 key climate parameters...")
+    time.sleep(2)
+    st.success("✅ Model trained successfully (Simulated AI).")
+    return True
+
+model = load_and_train_model()
+
+# =====================================================
+# CONSTANTS & FEATURE SETUP
+# =====================================================
 FEATURES = [
     "MonsoonIntensity",
     "TopographyDrainage",
@@ -23,7 +50,6 @@ FEATURES = [
     "Watersheds"
 ]
 
-# Max values for each feature (as provided)
 FEATURE_MAX = {
     "MonsoonIntensity": 16,
     "TopographyDrainage": 18,
@@ -37,12 +63,9 @@ FEATURE_MAX = {
     "Watersheds": 16
 }
 
-TARGET_MIN = 0.28
-TARGET_MAX = 0.72
-
-# =====================================
-# 🔸 HELPER — map inputs into features
-# =====================================
+# =====================================================
+# INPUT → FEATURE MAPPING
+# =====================================================
 def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
     mapped = {}
     mapped["MonsoonIntensity"] = rainfall / 10.0
@@ -62,17 +85,16 @@ def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
         mapped[feat] = val
     return mapped
 
-# =====================================
-# 🔸 FORMULA-BASED FLOOD RISK
-# =====================================
+# =====================================================
+# FORMULA-BASED FLOOD RISK MODEL
+# =====================================================
 def calculate_flood_probability(rainfall, humidity, temperature, soil):
-    """Smart simulation of flood probability using realistic relationships."""
+    """Smart simulation of flood probability using realistic environmental relationships."""
     rainfall = float(rainfall)
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
 
-    # Derived metrics
     monsoon = rainfall / 15
     drainage = max(0, 1 - soil / 120)
     heat_factor = temperature / 45
@@ -91,9 +113,9 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     flood_score = np.clip(flood_score, 0, 1)
     return flood_score
 
-# =====================================
-# 🔸 SAFETY GUIDE (Detailed)
-# =====================================
+# =====================================================
+# SAFETY GUIDE
+# =====================================================
 safety_guide = {
     (0, 10): {
         "Before": (
@@ -267,12 +289,9 @@ safety_guide = {
     }
 }
 
-# =====================================
-# 🔸 STREAMLIT UI
-# =====================================
-st.set_page_config(page_title="Flood Prediction AI", layout="wide")
-st.title("🌧️ Flood Prediction & Safety Dashboard")
-
+# =====================================================
+# STREAMLIT UI — TABS
+# =====================================================
 tabs = st.tabs([
     "🌆 Mumbai Live Data",
     "🔍 Predict Flood Risk",
@@ -283,8 +302,11 @@ tabs = st.tabs([
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
-    st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
-    st.write("The data updates will be stopped once the event is over, as our PCs will not be able to handle the load. It can be done for longer periods of time, if we're given ample resources")
+    st.header("🌆 Mumbai Live Data (Auto-fetched Satellite Simulation)")
+    st.write(
+        "This shows real-time simulated environmental readings from Mumbai. "
+        "Actual integration with APIs can replace this for real data."
+    )
 
     mumbai_data = {
         "Rainfall (mm)": 215,
@@ -296,20 +318,19 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    # Formula-based risk
     flood_prob = calculate_flood_probability(
-        rainfall=mumbai_data["Rainfall (mm)"],
-        humidity=mumbai_data["Humidity (%)"],
-        temperature=mumbai_data["Temperature (°C)"],
-        soil=mumbai_data["Soil Moisture (%)"]
+        mumbai_data["Rainfall (mm)"],
+        mumbai_data["Humidity (%)"],
+        mumbai_data["Temperature (°C)"],
+        mumbai_data["Soil Moisture (%)"]
     )
 
     risk = round(flood_prob * 100, 2)
-    st.subheader(f"Predicted Flood Risk: {risk}%")
+    st.subheader(f"Predicted Flood Risk for Mumbai: {risk}%")
 
     for (low, high), guide in safety_guide.items():
         if low <= risk <= high:
-            st.markdown(f"### 🛟 Flood Safety Actions for Mumbai ({low}-{high}% Risk)")
+            st.markdown(f"### 🛟 Safety Measures ({low}-{high}% Risk Zone)")
             st.markdown(f"**Before Flood:** {guide['Before']}")
             st.markdown(f"**During Flood:** {guide['During']}")
             st.markdown(f"**After Flood:** {guide['After']}")
@@ -328,14 +349,14 @@ with tabs[1]:
         risk_percent = round(flood_prob * 100, 2)
         st.subheader(f"Predicted Flood Risk: {risk_percent}%")
 
-        with st.expander("Show mapped features"):
+        with st.expander("Show internal feature mapping"):
             mapped = map_user_inputs_to_features(rainfall, humidity, temperature, soil)
             feat_df = pd.DataFrame([{k: mapped[k] for k in FEATURES}])
             st.dataframe(feat_df.T.rename(columns={0: "Value"}))
 
         for (low, high), guide in safety_guide.items():
             if low <= risk_percent <= high:
-                st.markdown(f"### 🛟 Flood Safety Actions ({low}-{high}% Risk)")
+                st.markdown(f"### 🛟 Safety Actions ({low}-{high}% Zone)")
                 st.markdown(f"**Before Flood:** {guide['Before']}")
                 st.markdown(f"**During Flood:** {guide['During']}")
                 st.markdown(f"**After Flood:** {guide['After']}")
@@ -343,13 +364,11 @@ with tabs[1]:
 
 # ---------------- TAB 3 ----------------
 with tabs[2]:
-    st.header("🛟 Flood Safety Guide — Check by Risk %")
-    st.write("Enter a risk percentage to see tailored safety actions.")
-
-    user_risk = st.slider("Enter Flood Risk %", 0, 100, 30)
+    st.header("🛟 Flood Safety Guide — Based on Risk %")
+    user_risk = st.slider("Select your estimated Flood Risk (%)", 0, 100, 30)
     for (low, high), guide in safety_guide.items():
         if low <= user_risk <= high:
-            st.markdown(f"### For {low}-{high}% Flood Risk:")
+            st.markdown(f"### Safety Plan for {low}-{high}% Risk:")
             st.markdown(f"**Before Flood:** {guide['Before']}")
             st.markdown(f"**During Flood:** {guide['During']}")
             st.markdown(f"**After Flood:** {guide['After']}")
@@ -358,45 +377,29 @@ with tabs[2]:
 # ---------------- TAB 4 ----------------
 with tabs[3]:
     st.header("🚨 Emergency Helplines & Disaster Contacts")
-    st.write("In case of a flood or any severe weather emergency, contact the following helplines immediately.")
-
-    st.markdown("### 📞 National Helplines")
     st.markdown("""
-    - **National Disaster Management Authority (NDMA):** 011-26701700
-    - **National Emergency Helpline (India):** 112
-    - **Disaster Management Control Room:** 1078
-    - **Fire & Rescue Services:** 101
-    - **Ambulance:** 102 / 108
+    ### 📞 National Helplines
+    - **National Disaster Management Authority (NDMA):** 011-26701700  
+    - **National Emergency Helpline (India):** 112  
+    - **Disaster Management Control Room:** 1078  
+    - **Fire & Rescue Services:** 101  
+    - **Ambulance:** 102 / 108  
+
+    ### 🌆 Mumbai-Specific
+    - **BMC Control Room:** 1916  
+    - **Mumbai Police:** 100  
+    - **Mumbai Fire Brigade:** 101  
+    - **Mumbai Flood Helpline:** 1916  
+    - **Railway Helpline:** 139  
     """)
 
-    st.markdown("### 🌆 Mumbai-Specific Helplines")
-    st.markdown("""
-    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916
-    - **Mumbai Police Helpline:** 100
-    - **Mumbai Fire Brigade:** 101
-    - **Mumbai Flood Helpline:** 1916 (Active during monsoon)
-    - **Railway Helpline (for stranded passengers):** 139
-    """)
-
-    st.markdown("### 🌐 Useful Websites")
-    st.markdown("""
-    - [National Disaster Management Authority (NDMA)](https://ndma.gov.in)
-    - [Maharashtra State Disaster Management Authority](https://dmgroup.maharashtra.gov.in)
-    - [IMD Weather Updates](https://mausam.imd.gov.in)
-    - [BMC Disaster Management](https://portal.mcgm.gov.in)
-    """)
-
-    st.info(
-        "💡 **Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies."
-    )
-    st.success("Stay alert, stay safe, and help others when possible 💪")
+    st.info("💡 Keep your phone charged and follow only verified official instructions during emergencies.")
 
 # ---------------- TAB 5 ----------------
 with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
-    st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
+    st.write("Select your area to visualize nearby shelters and safe evacuation routes:")
 
-    # Define data for each area
     evacuation_data = {
         "Andheri": {
             "center": [19.1197, 72.8468],
@@ -406,15 +409,6 @@ with tabs[4]:
                 {"name": "Vile Parle Community Hall", "lat": 19.1020, "lon": 72.8440},
             ],
             "route": [[19.1135, 72.8697], [19.1197, 72.8468], [19.1260, 72.8360]]
-        },
-        "Kurla": {
-            "center": [19.0722, 72.8780],
-            "shelters": [
-                {"name": "Kurla Relief Camp", "lat": 19.0722, "lon": 72.8780},
-                {"name": "Nehru Nagar High School Shelter", "lat": 19.0655, "lon": 72.8825},
-                {"name": "BKC Public Ground", "lat": 19.0665, "lon": 72.8550},
-            ],
-            "route": [[19.0655, 72.8825], [19.0722, 72.8780], [19.0665, 72.8550]]
         },
         "Bandra": {
             "center": [19.0545, 72.8400],
@@ -428,51 +422,28 @@ with tabs[4]:
         "Dadar": {
             "center": [19.0176, 72.8562],
             "shelters": [
-                {"name": "Shivaji Park Hall Shelter", "lat": 19.0201, "lon": 72.8371},
+                {"name": "Shivaji Park Shelter", "lat": 19.0201, "lon": 72.8371},
                 {"name": "Dadar Railway Camp", "lat": 19.0168, "lon": 72.8449},
                 {"name": "Portuguese Church Shelter", "lat": 19.0231, "lon": 72.8441},
             ],
             "route": [[19.0168, 72.8449], [19.0176, 72.8562], [19.0201, 72.8371]]
-        },
-        "Powai": {
-            "center": [19.1176, 72.9060],
-            "shelters": [
-                {"name": "IIT Bombay Main Ground Shelter", "lat": 19.1334, "lon": 72.9133},
-                {"name": "Powai Lake View Relief Zone", "lat": 19.1102, "lon": 72.9053},
-                {"name": "Hiranandani Public School Shelter", "lat": 19.1213, "lon": 72.9120},
-            ],
-            "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
         }
     }
 
-    # Dropdown for user area selection
-    area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
+    area = st.selectbox("Select your area:", list(evacuation_data.keys()))
+    data = evacuation_data[area]
+    m = folium.Map(location=data["center"], zoom_start=13)
 
-    # Generate map dynamically based on selected area
-    data = evacuation_data.get(area)
-    if data is None:
-        st.error("❌ No evacuation data found for this area!")
-    else:
-        m = folium.Map(location=data["center"], zoom_start=13)
-        for s in data["shelters"]:
-            folium.Marker(
-                [s["lat"], s["lon"]],
-                popup=s["name"],
-                icon=folium.Icon(color="green", icon="home")
-            ).add_to(m)
+    for s in data["shelters"]:
+        folium.Marker([s["lat"], s["lon"]], popup=s["name"], icon=folium.Icon(color="green", icon="home")).add_to(m)
 
-        folium.PolyLine(
-            locations=data["route"],
-            color="blue",
-            weight=3,
-            opacity=0.7,
-            tooltip="Recommended Evacuation Path"
-        ).add_to(m)
+    folium.PolyLine(data["route"], color="blue", weight=3, opacity=0.7, tooltip="Evacuation Path").add_to(m)
+    st_folium(m, width=700, height=500)
 
-        st_folium(m, width=700, height=500)
-        st.markdown(
-            "<p style='text-align:center; font-size:16px; color:gray;'>"
-            "📍 Always follow official local evacuation orders and stay informed via government alerts."
-            "</p>",
-            unsafe_allow_html=True
-        )
+    st.markdown(
+        "<p style='text-align:center; font-size:16px; color:gray;'>"
+        "📍 Always follow official evacuation alerts and stay informed."
+        "</p>",
+        unsafe_allow_html=True
+    )
+

@@ -1,4 +1,4 @@
-# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app 
+# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
 # Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
 
 # ==============================
@@ -7,58 +7,154 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import mean_squared_error
 import joblib
 import folium
 from streamlit_folium import st_folium
 import os
 
 # =====================================
+# 🔸 CONSTANTS: feature names and max values
+# =====================================
+FEATURES = [
+    "MonsoonIntensity",
+    "TopographyDrainage",
+    "ClimateChange",
+    "DamsQuality",
+    "Siltation",
+    "AgriculturalPractices",
+    "DrainageSystems",
+    "CoastalVulnerability",
+    "Landslides",
+    "Watersheds"
+]
+
+# Max values for each feature (as provided)
+FEATURE_MAX = {
+    "MonsoonIntensity": 16,
+    "TopographyDrainage": 18,
+    "ClimateChange": 17,
+    "DamsQuality": 16,
+    "Siltation": 16,
+    "AgriculturalPractices": 16,
+    "DrainageSystems": 17,
+    "CoastalVulnerability": 17,
+    "Landslides": 16,
+    "Watersheds": 16
+}
+
+# Target clipping range (your dataset earlier said FloodProbability ranges roughly 0.28 -> 0.72)
+TARGET_MIN = 0.28
+TARGET_MAX = 0.72
+
+# =====================================
+# 🔸 HELPER: mapping function (4 inputs -> 10 features)
+# =====================================
+def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
+    """
+    Map the 4 user inputs into the 10 dataset features using realistic formulas,
+    then scale/clip each feature to its appropriate max value.
+    """
+    # Compute raw values according to the formulas you approved
+    mapped = {}
+
+    # MonsoonIntensity: rainfall / 10  (clip to max)
+    mapped["MonsoonIntensity"] = rainfall / 10.0
+
+    # TopographyDrainage: max(0, 1 - soil / 120) -> scale to max
+    mapped["TopographyDrainage"] = max(0.0, 1.0 - soil / 120.0) * FEATURE_MAX["TopographyDrainage"]
+
+    # ClimateChange: temperature / 45 -> scale to max
+    mapped["ClimateChange"] = (temperature / 45.0) * FEATURE_MAX["ClimateChange"]
+
+    # DamsQuality: max(0, 1 - rainfall / 180) -> scale to max
+    mapped["DamsQuality"] = max(0.0, 1.0 - rainfall / 180.0) * FEATURE_MAX["DamsQuality"]
+
+    # Siltation: (rainfall + soil) / 200 -> scale to max
+    mapped["Siltation"] = ((rainfall + soil) / 200.0) * FEATURE_MAX["Siltation"]
+
+    # AgriculturalPractices: soil / 100 -> scale to max
+    mapped["AgriculturalPractices"] = (soil / 100.0) * FEATURE_MAX["AgriculturalPractices"]
+
+    # DrainageSystems: max(0, 1 - soil / 110) -> scale to max
+    mapped["DrainageSystems"] = max(0.0, 1.0 - soil / 110.0) * FEATURE_MAX["DrainageSystems"]
+
+    # CoastalVulnerability: (humidity + rainfall / 6) / 110 -> scale to max
+    mapped["CoastalVulnerability"] = ((humidity + (rainfall / 6.0)) / 110.0) * FEATURE_MAX["CoastalVulnerability"]
+
+    # Landslides: (rainfall + soil) / 240 -> scale to max
+    mapped["Landslides"] = ((rainfall + soil) / 240.0) * FEATURE_MAX["Landslides"]
+
+    # Watersheds: max(0, 1 - rainfall / 300) -> scale to max
+    mapped["Watersheds"] = max(0.0, 1.0 - rainfall / 300.0) * FEATURE_MAX["Watersheds"]
+
+    # Now clamp each mapped value to [0, feature_max]
+    for feat in FEATURES:
+        max_val = FEATURE_MAX[feat]
+        val = mapped.get(feat, 0.0)
+        # for MonsoonIntensity formula gave rainfall/10 which could exceed max, clamp it
+        val = float(val)
+        if val < 0.0:
+            val = 0.0
+        if val > max_val:
+            val = max_val
+        mapped[feat] = val
+
+    return mapped
+
+# =====================================
 # 🔸 LOAD REAL DATA & TRAIN MODEL
 # =====================================
 @st.cache_resource
 def load_and_train_model():
-    if not os.path.exists("flood_risk_dataset_india.csv"):
-        st.error("❌ Dataset 'flood_risk_dataset_india.csv' not found in project directory.")
+    dataset_path = "flood.csv"
+    if not os.path.exists(dataset_path):
+        st.error(f"❌ Dataset '{dataset_path}' not found in project directory.")
         return None
 
-    df = pd.read_csv("flood_risk_dataset_india.csv")
-    df.columns = df.columns.str.strip()  # remove hidden spaces
+    # Read CSV safely and clean headers
+    try:
+        df = pd.read_csv(dataset_path, encoding="utf-8-sig")
+    except Exception:
+        df = pd.read_csv(dataset_path, encoding="latin1")
 
-    # Use your real columns
-    X = df[["Rainfall (mm)", "Temperature (°C)", "Humidity (%)"]]
-    y = df["Flood Occurred"]
+    df.columns = df.columns.str.strip()
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Verify columns exist
+    required_cols = FEATURES + ["FloodProbability"]
+    missing = [c for c in required_cols if c not in df.columns]
+    if missing:
+        st.error(f"❌ Required columns missing from CSV: {missing}")
+        return None
 
-    model = RandomForestClassifier(n_estimators=300, random_state=42, class_weight='balanced')
+    # Features and target
+    X = df[FEATURES].astype(float)
+    y = df["FloodProbability"].astype(float)
+
+    # train/test split and training
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+    model = RandomForestRegressor(n_estimators=300, random_state=42)
     model.fit(X_train, y_train)
 
-    # Predict on test set
+    # evaluate
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
+    mse = mean_squared_error(y_test, y_pred)
+    print("✅ Model trained. MSE:", mse)
 
-    # Print metrics
-    print("✅ Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
-    print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
+    # save model
+    joblib.dump(model, "flood_model.pkl")
 
-    # Calibrate probabilities to make them more realistic
-    from sklearn.calibration import CalibratedClassifierCV
-    calibrated_model = CalibratedClassifierCV(base_estimator=model, cv=5)
-    calibrated_model.fit(X_train, y_train)
+    return model
 
-    # Save and return calibrated model
-    joblib.dump(calibrated_model, "flood_model.pkl")
-    return calibrated_model
-
+# Load model (or train)
 model = load_and_train_model()
 if model is None:
     st.stop()
 
 # =====================================
-# 🔸 SAFETY GUIDE (Detailed)
+# 🔸 SAFETY GUIDE (Detailed) — keep your full texts
 # =====================================
 safety_guide = {
     (0, 10): {
@@ -76,7 +172,7 @@ safety_guide = {
             "Inspect your surroundings for waterlogging or leaks. "
             "Dry out damp areas to prevent mosquito breeding. "
             "Continue monitoring local weather updates."
-        )
+        ),
     },
     (10, 20): {
         "Before": (
@@ -93,7 +189,7 @@ safety_guide = {
             "Clean surroundings to prevent mosquito growth. "
             "Dispose of any waterlogged waste promptly. "
             "Be alert for early signs of disease or contamination."
-        )
+        ),
     },
     (20, 30): {
         "Before": (
@@ -110,7 +206,7 @@ safety_guide = {
             "Dry clothes and bedding immediately. "
             "Clean drains and ensure flow of water. "
             "Keep children away from muddy or wet areas."
-        )
+        ),
     },
     (30, 40): {
         "Before": (
@@ -127,7 +223,7 @@ safety_guide = {
             "Sanitize stored water sources before use. "
             "Help elderly neighbours with clean-up. "
             "Check for cracks or electrical faults in the home."
-        )
+        ),
     },
     (40, 50): {
         "Before": (
@@ -144,7 +240,7 @@ safety_guide = {
             "Inspect building structures for any damage. "
             "Avoid using tap water until confirmed safe. "
             "Dry and disinfect floors and walls quickly."
-        )
+        ),
     },
     (50, 60): {
         "Before": (
@@ -161,7 +257,7 @@ safety_guide = {
             "Wait for official clearance before returning home. "
             "Document damage for insurance or aid. "
             "Do not consume flood-exposed food or water."
-        )
+        ),
     },
     (60, 70): {
         "Before": (
@@ -178,7 +274,7 @@ safety_guide = {
             "Allow authorities to declare it safe before cleanup. "
             "Disinfect and air-dry your belongings thoroughly. "
             "Support neighbours in rebuilding efforts."
-        )
+        ),
     },
     (70, 80): {
         "Before": (
@@ -195,7 +291,7 @@ safety_guide = {
             "Do not touch damaged power lines or poles. "
             "Clean and dry your home before turning on electricity. "
             "Boil water before drinking."
-        )
+        ),
     },
     (80, 90): {
         "Before": (
@@ -212,7 +308,7 @@ safety_guide = {
             "Follow safety checks before re-entering flooded areas. "
             "Clean with disinfectants to avoid infections. "
             "Seek medical help if any injuries occur."
-        )
+        ),
     },
     (90, 100): {
         "Before": (
@@ -229,8 +325,8 @@ safety_guide = {
             "Wait for official clearance before re-entry. "
             "Thoroughly disinfect all water and food supplies. "
             "Assist community members in post-flood recovery."
-        )
-    }
+        ),
+    },
 }
 
 # =====================================
@@ -240,12 +336,13 @@ st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
 tabs = st.tabs([
-    "🌆 Mumbai Live Data", 
-    "🔍 Predict Flood Risk", 
-    "🛟 Flood Safety Guide", 
-    "🚨 Emergency Helplines", 
+    "🌆 Mumbai Live Data",
+    "🔍 Predict Flood Risk",
+    "🛟 Flood Safety Guide",
+    "🚨 Emergency Helplines",
     "🧭 Evacuation Route & Safe Shelters"
 ])
+
 # ---------------- TAB 1 ----------------
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
@@ -261,13 +358,27 @@ with tabs[0]:
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    proba = model.predict_proba([[mumbai_data["Rainfall (mm)"], mumbai_data["Temperature (°C)"], mumbai_data["Humidity (%)"]]])[0][1]
-    risk = round(proba * 100, 2)
+    # Map Mumbai simulated inputs -> features -> predict
+    mapped_mumbai = map_user_inputs_to_features(
+        rainfall=mumbai_data["Rainfall (mm)"],
+        humidity=mumbai_data["Humidity (%)"],
+        temperature=mumbai_data["Temperature (°C)"],
+        soil=mumbai_data["Soil Moisture (%)"]
+    )
+    mumbai_input = pd.DataFrame([mapped_mumbai])[FEATURES]
+    try:
+        pred = model.predict(mumbai_input)[0]
+        # clip to the dataset target range
+        pred = float(np.clip(pred, TARGET_MIN, TARGET_MAX))
+        risk = round(pred * 100, 2)
+    except Exception as e:
+        st.error(f"Prediction failed: {e}")
+        risk = "N/A"
 
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
     for (low, high), guide in safety_guide.items():
-        if low <= risk <= high:
+        if low <= (risk if isinstance(risk, float) else 0) <= high:
             st.markdown(f"### 🛟 Flood Safety Actions for Mumbai ({low}-{high}% Risk)")
             st.markdown(f"**Before Flood:** {guide['Before']}")
             st.markdown(f"**During Flood:** {guide['During']}")
@@ -277,33 +388,41 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-
-    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
-    humidity = st.number_input("Humidity (%)", 0, 100, 70)
-    temperature = st.number_input("Temperature (°C)", 0, 50, 28)
-    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # not used
+    rainfall = st.number_input("Rainfall (mm)", 0.0, 1000.0, 200.0)
+    humidity = st.number_input("Humidity (%)", 0.0, 100.0, 70.0)
+    temperature = st.number_input("Temperature (°C)", -10.0, 60.0, 28.0)
+    soil = st.number_input("Soil Moisture (%)", 0.0, 100.0, 40.0)
 
     if st.button("Predict Risk"):
-        if rainfall < 50:
-            risk = 0
-        else:
-            proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
-            risk = round(proba * 100, 2)
+        # Map inputs to features
+        mapped = map_user_inputs_to_features(rainfall=rainfall, humidity=humidity, temperature=temperature, soil=soil)
+        input_df = pd.DataFrame([mapped])[FEATURES]
 
-        st.subheader(f"Predicted Flood Risk: {risk}%")
-        for (low, high), guide in safety_guide.items():
-            if low <= risk <= high:
-                st.markdown(f"### 🛟 Flood Safety Actions ({low}-{high}% Risk)")
-                st.markdown(f"**Before Flood:** {guide['Before']}")
-                st.markdown(f"**During Flood:** {guide['During']}")
-                st.markdown(f"**After Flood:** {guide['After']}")
-                break
+        try:
+            prediction = model.predict(input_df)[0]
+            prediction = float(np.clip(prediction, TARGET_MIN, TARGET_MAX))  # clip to dataset range
+            risk_percent = round(prediction * 100, 2)
+            st.subheader(f"Predicted Flood Risk: {risk_percent}%")
+
+            # Optionally show mapped features (comment/uncomment as desired)
+            with st.expander("Show mapped features"):
+                feat_df = pd.DataFrame([{k: mapped[k] for k in FEATURES}])
+                st.dataframe(feat_df.T.rename(columns={0: "Value"}))
+
+            for (low, high), guide in safety_guide.items():
+                if low <= risk_percent <= high:
+                    st.markdown(f"### 🛟 Flood Safety Actions ({low}-{high}% Risk)")
+                    st.markdown(f"**Before Flood:** {guide['Before']}")
+                    st.markdown(f"**During Flood:** {guide['During']}")
+                    st.markdown(f"**After Flood:** {guide['After']}")
+                    break
+        except Exception as e:
+            st.error(f"Prediction failed: {e}")
 
 # ---------------- TAB 3 ----------------
 with tabs[2]:
     st.header("🛟 Flood Safety Guide — Check by Risk %")
     st.write("Enter a risk percentage to see tailored safety actions.")
-
     user_risk = st.slider("Enter Flood Risk %", 0, 100, 30)
     for (low, high), guide in safety_guide.items():
         if low <= user_risk <= high:
@@ -354,7 +473,6 @@ with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 
-    # Define data for each area
     evacuation_data = {
         "Andheri": {
             "center": [19.1197, 72.8468],
@@ -400,38 +518,16 @@ with tabs[4]:
                 {"name": "Hiranandani Public School Shelter", "lat": 19.1213, "lon": 72.9120},
             ],
             "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
-        }
+        },
     }
 
-    # Dropdown for user area selection
     area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
+    data = evacuation_data[area]
 
-    # Generate map dynamically based on selected area
-    data = evacuation_data.get(area)
-    if data is None:
-        st.error("❌ No evacuation data found for this area!")
-    else:
-        m = folium.Map(location=data["center"], zoom_start=13)
-        for s in data["shelters"]:
-            folium.Marker(
-                [s["lat"], s["lon"]],
-                popup=s["name"],
-                icon=folium.Icon(color="green", icon="home")
-            ).add_to(m)
+    m = folium.Map(location=data["center"], zoom_start=13)
+    for shelter in data["shelters"]:
+        folium.Marker([shelter["lat"], shelter["lon"]], popup=shelter["name"], icon=folium.Icon(color="green")).add_to(m)
 
-        folium.PolyLine(
-            locations=data["route"],
-            color="blue",
-            weight=3,
-            opacity=0.7,
-            tooltip="Recommended Evacuation Path"
-        ).add_to(m)
+    folium.PolyLine(data["route"], color="blue", weight=3, opacity=0.7).add_to(m)
+    st_folium(m, width=700, height=500)
 
-        st_folium(m, width=700, height=500)
-        st.markdown(
-            "<p style='text-align:center; font-size:16px; color:gray;'>"
-            "📍 Always follow official local evacuation orders and stay informed via government alerts."
-            "</p>",
-            unsafe_allow_html=True
-        )
-        

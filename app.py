@@ -1,17 +1,15 @@
-# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
-# Link, for backend, KANAV ONLY: https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
+# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app 
+# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
 
 # ==============================
 # 🌊 Flood Prediction AI Dashboard (Real Data + Random Forest)
 # ==============================
-
 import streamlit as st
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
-from sklearn.calibration import CalibratedClassifierCV
 import joblib
 import folium
 from streamlit_folium import st_folium
@@ -22,31 +20,15 @@ import os
 # =====================================
 @st.cache_resource
 def load_and_train_model():
-    dataset_path = "FloodRiskIndia.csv"
-    if not os.path.exists(dataset_path):
-        st.error(f"❌ Dataset '{dataset_path}' not found in project directory.")
+    if not os.path.exists("flood_risk_dataset_india.csv"):
+        st.error("❌ Dataset 'flood_risk_dataset_india.csv' not found in project directory.")
         return None
 
-    # After reading CSV
-    df = pd.read_csv(dataset_path, encoding='utf-8-sig')  # handles BOM if present
-    
-    # Force rename columns to exact expected names
-    df.rename(columns={
-        df.columns[0]: "Rainfall(mm)",
-        df.columns[1]: "Humidity(%)",
-        df.columns[2]: "Temperature(C)",
-        df.columns[3]: "Flood Occurred"
-    }, inplace=True)
+    df = pd.read_csv("flood_risk_dataset_india.csv")
+    df.columns = df.columns.str.strip()  # remove hidden spaces
 
-    
-    # Now select features and target safely
-    required_cols = ["Rainfall(mm)", "Humidity(%)", "Temperature(C)", "Flood Occurred"]
-    missing_cols = [col for col in required_cols if col not in df.columns]
-    if missing_cols:
-        st.error(f"❌ Required columns missing: {missing_cols}")
-        return None
-    
-    X = df[["Rainfall(mm)", "Humidity(%)", "Temperature(C)"]]
+    # Use your real columns
+    X = df[["Rainfall (mm)", "Temperature (°C)", "Humidity (%)"]]
     y = df["Flood Occurred"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -63,7 +45,8 @@ def load_and_train_model():
     print("🌊 ROC-AUC:", round(roc_auc_score(y_test, y_proba), 3))
 
     # Calibrate probabilities to make them more realistic
-    calibrated_model = CalibratedClassifierCV(estimator=model, cv=5)
+    from sklearn.calibration import CalibratedClassifierCV
+    calibrated_model = CalibratedClassifierCV(base_estimator=model, cv=5)
     calibrated_model.fit(X_train, y_train)
 
     # Save and return calibrated model
@@ -93,7 +76,7 @@ safety_guide = {
             "Inspect your surroundings for waterlogging or leaks. "
             "Dry out damp areas to prevent mosquito breeding. "
             "Continue monitoring local weather updates."
-        ),
+        )
     },
     (10, 20): {
         "Before": (
@@ -110,7 +93,7 @@ safety_guide = {
             "Clean surroundings to prevent mosquito growth. "
             "Dispose of any waterlogged waste promptly. "
             "Be alert for early signs of disease or contamination."
-        ),
+        )
     },
     (20, 30): {
         "Before": (
@@ -127,7 +110,7 @@ safety_guide = {
             "Dry clothes and bedding immediately. "
             "Clean drains and ensure flow of water. "
             "Keep children away from muddy or wet areas."
-        ),
+        )
     },
     (30, 40): {
         "Before": (
@@ -144,7 +127,7 @@ safety_guide = {
             "Sanitize stored water sources before use. "
             "Help elderly neighbours with clean-up. "
             "Check for cracks or electrical faults in the home."
-        ),
+        )
     },
     (40, 50): {
         "Before": (
@@ -161,7 +144,7 @@ safety_guide = {
             "Inspect building structures for any damage. "
             "Avoid using tap water until confirmed safe. "
             "Dry and disinfect floors and walls quickly."
-        ),
+        )
     },
     (50, 60): {
         "Before": (
@@ -178,7 +161,7 @@ safety_guide = {
             "Wait for official clearance before returning home. "
             "Document damage for insurance or aid. "
             "Do not consume flood-exposed food or water."
-        ),
+        )
     },
     (60, 70): {
         "Before": (
@@ -195,7 +178,7 @@ safety_guide = {
             "Allow authorities to declare it safe before cleanup. "
             "Disinfect and air-dry your belongings thoroughly. "
             "Support neighbours in rebuilding efforts."
-        ),
+        )
     },
     (70, 80): {
         "Before": (
@@ -212,7 +195,7 @@ safety_guide = {
             "Do not touch damaged power lines or poles. "
             "Clean and dry your home before turning on electricity. "
             "Boil water before drinking."
-        ),
+        )
     },
     (80, 90): {
         "Before": (
@@ -229,7 +212,7 @@ safety_guide = {
             "Follow safety checks before re-entering flooded areas. "
             "Clean with disinfectants to avoid infections. "
             "Seek medical help if any injuries occur."
-        ),
+        )
     },
     (90, 100): {
         "Before": (
@@ -246,8 +229,8 @@ safety_guide = {
             "Wait for official clearance before re-entry. "
             "Thoroughly disinfect all water and food supplies. "
             "Assist community members in post-flood recovery."
-        ),
-    },
+        )
+    }
 }
 
 # =====================================
@@ -257,34 +240,30 @@ st.set_page_config(page_title="Flood Prediction AI", layout="wide")
 st.title("🌧️ Flood Prediction & Safety Dashboard")
 
 tabs = st.tabs([
-    "🌆 Mumbai Live Data",
-    "🔍 Predict Flood Risk",
-    "🛟 Flood Safety Guide",
-    "🚨 Emergency Helplines",
+    "🌆 Mumbai Live Data", 
+    "🔍 Predict Flood Risk", 
+    "🛟 Flood Safety Guide", 
+    "🚨 Emergency Helplines", 
     "🧭 Evacuation Route & Safe Shelters"
 ])
-
 # ---------------- TAB 1 ----------------
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
     st.write("This data is simulated and can be replaced with live API data later.")
 
     mumbai_data = {
-        "Rainfall(mm)": 215,
-        "Humidity(%)": 82,
-        "Temperature °C": 29,
+        "Rainfall (mm)": 215,
+        "Humidity (%)": 82,
+        "Temperature (°C)": 29,
         "Soil Moisture (%)": 55
     }
+
     df_mumbai = pd.DataFrame([mumbai_data])
     st.table(df_mumbai)
 
-    # Clip values to dataset range
-    rainfall = np.clip(mumbai_data["Rainfall(mm)"], 0, 350)
-    humidity = np.clip(mumbai_data["Humidity(%)"], 30, 100)
-    temp = np.clip(mumbai_data["Temperature °C"], 15, 45)
-
-    proba = model.predict_proba([[rainfall, temp, humidity]])[0][1]
+    proba = model.predict_proba([[mumbai_data["Rainfall (mm)"], mumbai_data["Temperature (°C)"], mumbai_data["Humidity (%)"]]])[0][1]
     risk = round(proba * 100, 2)
+
     st.subheader(f"Predicted Flood Risk: {risk}%")
 
     for (low, high), guide in safety_guide.items():
@@ -298,14 +277,18 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-    rainfall = st.number_input("Rainfall (mm)", 0, 350, 200)
-    humidity = st.number_input("Humidity (%)", 30, 100, 70)
-    temperature = st.number_input("Temperature (°C)", 15, 45, 28)
+
+    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
+    humidity = st.number_input("Humidity (%)", 0, 100, 70)
+    temperature = st.number_input("Temperature (°C)", 0, 50, 28)
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)  # not used
 
     if st.button("Predict Risk"):
-        proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
-        risk = round(proba * 100, 2)
+        if rainfall < 50:
+            risk = 0
+        else:
+            proba = model.predict_proba([[rainfall, temperature, humidity]])[0][1]
+            risk = round(proba * 100, 2)
 
         st.subheader(f"Predicted Flood Risk: {risk}%")
         for (low, high), guide in safety_guide.items():
@@ -320,6 +303,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("🛟 Flood Safety Guide — Check by Risk %")
     st.write("Enter a risk percentage to see tailored safety actions.")
+
     user_risk = st.slider("Enter Flood Risk %", 0, 100, 30)
     for (low, high), guide in safety_guide.items():
         if low <= user_risk <= high:
@@ -332,34 +316,45 @@ with tabs[2]:
 # ---------------- TAB 4 ----------------
 with tabs[3]:
     st.header("🚨 Emergency Helplines & Disaster Contacts")
+    st.write("In case of a flood or any severe weather emergency, contact the following helplines immediately.")
+
+    st.markdown("### 📞 National Helplines")
     st.markdown("""
-    ### 📞 National Helplines
-    - NDMA: 011-26701700
-    - National Emergency: 112
-    - Disaster Control Room: 1078
-    - Fire & Rescue: 101
-    - Ambulance: 102 / 108
+    - **National Disaster Management Authority (NDMA):** 011-26701700
+    - **National Emergency Helpline (India):** 112
+    - **Disaster Management Control Room:** 1078
+    - **Fire & Rescue Services:** 101
+    - **Ambulance:** 102 / 108
+    """)
 
-    ### 🌆 Mumbai-Specific Helplines
-    - BMC Control Room: 1916
-    - Mumbai Police: 100
-    - Mumbai Fire Brigade: 101
-    - Mumbai Flood Helpline: 1916
-    - Railway Helpline: 139
+    st.markdown("### 🌆 Mumbai-Specific Helplines")
+    st.markdown("""
+    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916
+    - **Mumbai Police Helpline:** 100
+    - **Mumbai Fire Brigade:** 101
+    - **Mumbai Flood Helpline:** 1916 (Active during monsoon)
+    - **Railway Helpline (for stranded passengers):** 139
+    """)
 
-    ### 🌐 Useful Websites
+    st.markdown("### 🌐 Useful Websites")
+    st.markdown("""
     - [National Disaster Management Authority (NDMA)](https://ndma.gov.in)
     - [Maharashtra State Disaster Management Authority](https://dmgroup.maharashtra.gov.in)
     - [IMD Weather Updates](https://mausam.imd.gov.in)
     - [BMC Disaster Management](https://portal.mcgm.gov.in)
     """)
-    st.info("💡 Always follow official instructions, keep phones charged, and avoid spreading rumours during emergencies.")
+
+    st.info(
+        "💡 **Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies."
+    )
+    st.success("Stay alert, stay safe, and help others when possible 💪")
 
 # ---------------- TAB 5 ----------------
 with tabs[4]:
     st.header("🧭 Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 
+    # Define data for each area
     evacuation_data = {
         "Andheri": {
             "center": [19.1197, 72.8468],
@@ -405,15 +400,38 @@ with tabs[4]:
                 {"name": "Hiranandani Public School Shelter", "lat": 19.1213, "lon": 72.9120},
             ],
             "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
-        },
+        }
     }
 
+    # Dropdown for user area selection
     area = st.selectbox("Select the area closest to you:", ["Andheri", "Kurla", "Bandra", "Dadar", "Powai"])
-    data = evacuation_data[area]
 
-    m = folium.Map(location=data["center"], zoom_start=13)
-    for shelter in data["shelters"]:
-        folium.Marker([shelter["lat"], shelter["lon"]], popup=shelter["name"], icon=folium.Icon(color="green")).add_to(m)
+    # Generate map dynamically based on selected area
+    data = evacuation_data.get(area)
+    if data is None:
+        st.error("❌ No evacuation data found for this area!")
+    else:
+        m = folium.Map(location=data["center"], zoom_start=13)
+        for s in data["shelters"]:
+            folium.Marker(
+                [s["lat"], s["lon"]],
+                popup=s["name"],
+                icon=folium.Icon(color="green", icon="home")
+            ).add_to(m)
 
-    folium.PolyLine(data["route"], color="blue", weight=3, opacity=0.7).add_to(m)
-    st_folium(m, width=700, height=500)
+        folium.PolyLine(
+            locations=data["route"],
+            color="blue",
+            weight=3,
+            opacity=0.7,
+            tooltip="Recommended Evacuation Path"
+        ).add_to(m)
+
+        st_folium(m, width=700, height=500)
+        st.markdown(
+            "<p style='text-align:center; font-size:16px; color:gray;'>"
+            "📍 Always follow official local evacuation orders and stay informed via government alerts."
+            "</p>",
+            unsafe_allow_html=True
+        )
+        

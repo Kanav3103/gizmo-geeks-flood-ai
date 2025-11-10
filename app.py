@@ -348,11 +348,6 @@ with tabs[1]:
         risk_percent = round(flood_prob * 100, 2)
         st.subheader(f"Predicted Flood Risk: {risk_percent}%")
 
-        with st.expander("Show internal feature mapping"):
-            mapped = map_user_inputs_to_features(rainfall, humidity, temperature, soil)
-            feat_df = pd.DataFrame([{k: mapped[k] for k in FEATURES}])
-            st.dataframe(feat_df.T.rename(columns={0: "Value"}))
-
         for (low, high), guide in safety_guide.items():
             if low <= risk_percent <= high:
                 st.markdown(f"### 🛟 Safety Actions ({low}-{high}% Zone)")

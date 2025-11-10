@@ -96,6 +96,10 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
+    # 🚫 Condition: If rainfall < 50 mm, flood risk = 0
+    if rainfall < 50:
+        return 0.0
+
 
     monsoon = rainfall / 15
     drainage = max(0, 1 - soil / 120)

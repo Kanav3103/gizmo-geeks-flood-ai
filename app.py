@@ -42,22 +42,6 @@ st.title("🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction System")
 st.markdown("### Smart flood risk estimation based on environmental conditions.")
 
 # =====================================================
-# "TRAINING" (Simulated)
-# =====================================================
-# =====================================================
-# "TRAINING" (Simulated Boot Sequence)
-# =====================================================
-with st.empty():
-    st.info("🤖 Training Flood AI model on 10 key climate parameters... Please wait ⏳")
-    time.sleep(10)  # Simulate 10 seconds of training
-    st.success("✅ Model trained successfully (Simulated AI).")
-    time.sleep(3)   # Show success for 3 seconds
-    st.empty()      # Clear messages
-
-# Set model flag (pretend it's trained)
-model = True
-
-# =====================================================
 # CONSTANTS & FEATURE SETUP
 # =====================================================
 FEATURES = [

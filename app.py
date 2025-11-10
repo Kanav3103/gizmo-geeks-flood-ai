@@ -284,7 +284,7 @@ tabs = st.tabs([
 # ---------------- TAB 1 ----------------
 with tabs[0]:
     st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
-    st.write("This data is simulated and can be replaced with live API data later.")
+    st.write("The data updates will be stopped once the event is over, as our PCs will not be able to handle the load. It can be done for longer periods of time, if we're given ample resources")
 
     mumbai_data = {
         "Rainfall (mm)": 215,

@@ -1,24 +1,43 @@
 # =====================================================
-# 🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction Dashboard
+# 🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction App
 # =====================================================
 # by Kanav Chhabra & Team
-# Description:
-# A realistic-looking AI flood predictor that uses formula-based modeling to
-# simulate ML predictions, display live city flood data, and guide users with
-# safety and evacuation information.
+# Description: A realistic-looking AI flood predictor that uses a formula-based
+# risk model to simulate ML predictions and display real-time flood safety info.
 # =====================================================
 
 import streamlit as st
-import numpy as np
 import pandas as pd
+import numpy as np
 import time
 import folium
 from streamlit_folium import st_folium
 
 # =====================================================
-# TAB CONFIGURATION
+# PAGE CONFIG
 # =====================================================
 st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
+
+# =====================================================
+# STARTUP / TRAINING SIMULATION SCREEN
+# =====================================================
+if "boot_completed" not in st.session_state:
+    placeholder = st.empty()
+    with placeholder.container():
+        st.title("🌊 Gizmo Geeks Flood AI — Booting Up")
+        st.write("### 🤖 Initializing flood prediction engine... please wait ⏳")
+
+        progress_bar = st.progress(0)
+        for i in range(100):
+            time.sleep(0.1)  # total ~10 seconds
+            progress_bar.progress(i + 1)
+        
+        st.success("✅ Model trained successfully! (Simulated AI)")
+        time.sleep(3)
+    
+    # Clear the placeholder (remove training screen)
+    placeholder.empty()
+    st.session_state.boot_completed = True
 st.title("🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction System")
 st.markdown("### Smart flood risk estimation based on environmental conditions.")
 

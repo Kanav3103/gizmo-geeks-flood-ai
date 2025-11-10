@@ -25,14 +25,18 @@ st.markdown("### Smart flood risk estimation based on environmental conditions."
 # =====================================================
 # "TRAINING" (Simulated)
 # =====================================================
-@st.cache_resource
-def load_and_train_model():
-    st.info("🤖 Training Flood AI model on 10 key climate parameters...")
-    time.sleep(2)
+# =====================================================
+# "TRAINING" (Simulated Boot Sequence)
+# =====================================================
+with st.empty():
+    st.info("🤖 Training Flood AI model on 10 key climate parameters... Please wait ⏳")
+    time.sleep(10)  # Simulate 10 seconds of training
     st.success("✅ Model trained successfully (Simulated AI).")
-    return True
+    time.sleep(3)   # Show success for 3 seconds
+    st.empty()      # Clear messages
 
-model = load_and_train_model()
+# Set model flag (pretend it's trained)
+model = True
 
 # =====================================================
 # CONSTANTS & FEATURE SETUP

@@ -1,10 +1,4 @@
-# =====================================================
-# 🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction App
-# =====================================================
-# by Kanav Chhabra & Team
-# Description: A realistic-looking AI flood predictor that uses a formula-based
-# risk model to simulate ML predictions and display real-time flood safety info.
-# =====================================================
+
 
 import streamlit as st
 import pandas as pd

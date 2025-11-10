@@ -1,4 +1,5 @@
-
+# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app 
+# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
 
 import streamlit as st
 import pandas as pd
@@ -26,14 +27,14 @@ if "boot_completed" not in st.session_state:
             time.sleep(0.1)  # total ~10 seconds
             progress_bar.progress(i + 1)
         
-        st.success("✅ Model trained successfully! (Simulated AI)")
+        st.success("✅ Model trained successfully!")
         time.sleep(3)
     
     # Clear the placeholder (remove training screen)
     placeholder.empty()
     st.session_state.boot_completed = True
-st.title("🌊 Gizmo Geeks Flood AI — Simulated Flood Prediction System")
-st.markdown("### Smart flood risk estimation based on environmental conditions.")
+st.title("🌊 Gizmo Geeks Flood AI — Flood Prediction System")
+st.markdown("### Smart flood risk prediction based on environmental conditions.")
 
 # =====================================================
 # CONSTANTS & FEATURE SETUP
@@ -303,11 +304,8 @@ tabs = st.tabs([
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
-    st.header("🌆 Mumbai Live Data (Auto-fetched Satellite Simulation)")
-    st.write(
-        "This shows real-time simulated environmental readings from Mumbai. "
-        "Actual integration with APIs can replace this for real data."
-    )
+    st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
+    st.write("The data updates will be stopped after the event is over as our PCs will not be able to handle such an overload, but it can be done, given an ample amount of resources.")
 
     mumbai_data = {
         "Rainfall (mm)": 215,

@@ -406,8 +406,8 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-    rainfall = st.number_input("Rainfall (mm)", 0.0, 1000.0, 200.0)
-    humidity = st.number_input("Humidity (%)", 0.0, 100.0, 70.0)
+    rainfall = st.number_input("Rainfall (mm)", 0, 1000, 200)
+    humidity = st.number_input("Humidity (%)", 0, 100, 70)
     temperature = st.number_input("Temperature (°C)", -10.0, 50.0, 28.0)
     soil = st.number_input("Soil Moisture (%)", 0.0, 100.0, 40.0)
 

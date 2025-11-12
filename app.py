@@ -8,6 +8,50 @@ import time
 import folium
 from streamlit_folium import st_folium
 
+st.markdown("""
+<style>
+    /* General app styling */
+    .main {
+        background-color: #f0f7ff;
+        color: #002b36;
+        font-family: 'Poppins', sans-serif;
+    }
+    h1, h2, h3, h4 {
+        color: #004080;
+        font-weight: 600;
+    }
+    /* Buttons */
+    .stButton>button {
+        background-color: #0078d7;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.6rem 1rem;
+        transition: 0.3s ease-in-out;
+    }
+    .stButton>button:hover {
+        background-color: #005ea6;
+        transform: scale(1.05);
+    }
+    /* Tabs */
+    .stTabs [role="tablist"] {
+        background-color: #e7f2ff;
+        border-radius: 12px;
+        padding: 5px;
+    }
+    .stTabs [role="tab"] {
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #0078d7;
+        color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
 # =====================================================
 # PAGE CONFIG
 # =====================================================
@@ -301,7 +345,7 @@ safety_guide = {
 tabs = st.tabs([
     "🌆 Mumbai Live Data",
     "🔍 Predict Flood Risk",
-    "🛟 Flood Safety Guide",
+    "🛡️ Flood Safety Guide",
     "🚨 Emergency Helplines",
     "🧭 Evacuation Route & Safe Shelters"
 ])

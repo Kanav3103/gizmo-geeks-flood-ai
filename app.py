@@ -1,99 +1,85 @@
+# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app 
+# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import time
+import folium
+from streamlit_folium import st_folium
+
+# =====================================================
+# PAGE CONFIG
+# =====================================================
+st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
+
 st.markdown("""
 <style>
-/* ===== ULTRA BRIGHT MAUVE STARFIELD THEME ===== */
-html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #c58aff 0%, #b97aff 25%, #a164e8 55%, #612d91 100%);
-    color: white;
-    height: 100%;
-    overflow: hidden;
+/* ===== Full Starry Background ===== */
+html, body, [class*="stAppViewContainer"], [class*="main"], [data-testid="stAppViewContainer"] {
+    background: radial-gradient(circle at 25% 25%, #4b1d70, #1a0732 70%) fixed;
+    color: #f5eaff;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* ===== STAR LAYERS ===== */
-#stars, #stars2, #stars3 {
+/* Animated Stars Layer */
+html::before {
+    content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 200%;
-    height: 200%;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+    animation: twinkle 6s infinite alternate ease-in-out;
     z-index: -1;
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    pointer-events: none;
 }
 
-/* Bright glowing stars — 3 layers, each moving differently */
-#stars {
-    background-image: radial-gradient(3px 3px at 20px 20px, rgba(255,255,255,0.95), rgba(255,255,255,0.1)),
-                      radial-gradient(2px 2px at 60px 80px, rgba(255,255,255,0.9), transparent),
-                      radial-gradient(4px 4px at 100px 150px, rgba(255,255,255,1), rgba(255,255,255,0.1));
-    animation: moveStars 120s linear infinite;
-    filter: drop-shadow(0 0 6px white) drop-shadow(0 0 12px #fff);
-}
-#stars2 {
-    background-image: radial-gradient(2px 2px at 40px 40px, rgba(255,255,200,0.9), transparent),
-                      radial-gradient(3px 3px at 90px 130px, rgba(255,255,255,1), transparent),
-                      radial-gradient(1.5px 1.5px at 150px 200px, rgba(255,255,255,0.8), transparent);
-    animation: moveStars2 180s linear infinite;
-    filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #f8e8ff);
-}
-#stars3 {
-    background-image: radial-gradient(3px 3px at 50px 50px, rgba(255,240,255,0.95), transparent),
-                      radial-gradient(2px 2px at 110px 170px, rgba(255,255,255,1), transparent),
-                      radial-gradient(4px 4px at 200px 250px, rgba(255,255,255,0.95), rgba(255,255,255,0.1));
-    animation: moveStars3 240s linear infinite;
-    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #d8c4ff);
-}
-
-/* ===== STAR MOVEMENT ===== */
-@keyframes moveStars {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-10%, -10%); }
-    100% { transform: translate(0, 0); }
-}
-@keyframes moveStars2 {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(5%, -5%); }
-    100% { transform: translate(0, 0); }
-}
-@keyframes moveStars3 {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-7%, 7%); }
-    100% { transform: translate(0, 0); }
-}
-
-/* ===== STAR TWINKLE ===== */
 @keyframes twinkle {
-    0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff); }
-    50% { opacity: 0.6; filter: drop-shadow(0 0 4px #fdfdff) drop-shadow(0 0 8px #f8e8ff); }
+    0% {opacity: 0.2;}
+    100% {opacity: 0.4;}
 }
 
-/* Apply twinkle animation */
-#stars, #stars2, #stars3 {
-    animation-name: moveStars, twinkle;
-    animation-duration: 150s, 3s;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: infinite, infinite;
-}
-
-/* ===== Tabs and UI ===== */
+/* ===== Tabs ===== */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 8px;
     backdrop-filter: blur(10px);
-    border-radius: 14px;
-    padding: 0.6rem 1rem;
-    color: black !important;
 }
-div[data-baseweb="tab"] p {
-    color: black !important;
-    font-weight: 700;
+.stTabs [role="tab"] {
+    color: #f5eaff !important;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.stTabs [aria-selected="true"] {
+    background-color: #b072ff !important;
+    color: white !important;
+    box-shadow: 0 0 10px #cda0ff;
+}
+
+/* ===== Buttons ===== */
+.stButton>button {
+    background: linear-gradient(90deg, #a76dff, #d88cff);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    transition: 0.3s;
+}
+.stButton>button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 12px #cba4ff;
+}
+
+/* ===== Headings ===== */
+h1, h2, h3 {
+    color: #f0d7ff;
+    text-shadow: 0 0 10px #9d6aff;
 }
 </style>
-
-<!-- Star layers -->
-<div id="stars"></div>
-<div id="stars2"></div>
-<div id="stars3"></div>
 """, unsafe_allow_html=True)
+
 
 
 # =====================================================

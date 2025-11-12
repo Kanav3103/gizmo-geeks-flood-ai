@@ -15,7 +15,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
     background: radial-gradient(circle at top left, #cbb3f5 0%, #b18de0 35%, #9b74d1 70%, #5d3f91 100%);
     color: white;
     height: 100%;
-    overflow: hidden !important; /* ✅ Prevent layout overflow */
+    overflow: hidden !important; /* prevent scroll and resize bugs */
 }
 
 /* ===== Tabs Section ===== */
@@ -55,18 +55,16 @@ div[data-baseweb="tab"] p {
     box-shadow: 0 0 15px rgba(110, 80, 170, 0.35);
 }
 
-/* ===== Fix Map and Charts Overflow ===== */
-[data-testid="stVerticalBlock"] {
-    overflow: visible !important;
-}
-[data-testid="stHorizontalBlock"] {
-    overflow: visible !important;
-}
-.element-container iframe {
-    max-height: 600px !important; /* ✅ Limit map height */
-    max-width: 100% !important;
+/* ===== Map Size Fix ===== */
+.element-container iframe, .stIFrame iframe, iframe {
+    height: 450px !important; /* ✅ Controls map height */
+    max-height: 450px !important;
+    width: 100% !important;
     border-radius: 12px;
-    box-shadow: 0 0 20px rgba(90, 60, 140, 0.3);
+    box-shadow: 0 0 15px rgba(80, 50, 130, 0.3);
+}
+[data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {
+    overflow: visible !important;
 }
 
 /* ===== Headers ===== */
@@ -75,7 +73,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # =====================================================
 # PAGE CONFIG

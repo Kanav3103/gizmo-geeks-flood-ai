@@ -8,12 +8,12 @@ import time
 import folium
 from streamlit_folium import st_folium
 
-# === Bright Mauve Theme (No Stars) ===
+# === Soft Mauve Theme (Balanced & Clean) ===
 st.markdown("""
 <style>
-/* ===== BRIGHT MAUVE THEME (NO STARS, CLEAN LAYOUT) ===== */
+/* ===== SOFT MAUVE THEME (NO STARS) ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #d3a6ff 0%, #c18bff 30%, #a86bff 70%, #612d91 100%);
+    background: radial-gradient(circle at top left, #cbb3f5 0%, #b18de0 35%, #9b74d1 70%, #5d3f91 100%);
     color: white;
     height: 100%;
     overflow: visible !important;
@@ -21,7 +21,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
 
 /* ===== Tabs Section ===== */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(10px);
     border-radius: 14px;
     padding: 0.6rem 1rem;
@@ -35,25 +35,25 @@ div[data-baseweb="tab"] p {
 
 /* ===== Buttons ===== */
 .stButton>button, .stDownloadButton>button {
-    background: linear-gradient(135deg, #b87fff, #9e5cff);
+    background: linear-gradient(135deg, #a580e0, #8d6fcf);
     color: white;
     border: none;
     border-radius: 10px;
     font-weight: 600;
     padding: 0.5rem 1.2rem;
-    box-shadow: 0 0 10px rgba(180, 120, 255, 0.5);
+    box-shadow: 0 0 10px rgba(140, 100, 200, 0.4);
     transition: all 0.3s ease;
 }
 .stButton>button:hover, .stDownloadButton>button:hover {
-    background: linear-gradient(135deg, #a864ff, #8a3eff);
-    box-shadow: 0 0 18px rgba(180, 120, 255, 0.8);
+    background: linear-gradient(135deg, #9a79d8, #7d5ec6);
+    box-shadow: 0 0 15px rgba(140, 100, 200, 0.6);
 }
 
 /* ===== DataFrame Table Styling ===== */
 [data-testid="stDataFrame"] {
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(150, 90, 255, 0.4);
+    box-shadow: 0 0 15px rgba(110, 80, 170, 0.35);
 }
 
 /* ===== Headers ===== */

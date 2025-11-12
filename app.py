@@ -127,21 +127,23 @@ FEATURE_MAX = {
 # =====================================================
 def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
     mapped = {}
-    mapped["MonsoonIntensity"] = rainfall / 10.0
+    rainfall_clamped = max(0.0, min(rainfall, 500.0))
+    rainfall_factor = rainfall_clamped / 500.0
+    TMIN = 10.0
+    TMAX = 45.0
+    temp_clamped = max(TMIN, min(temperature, TMAX))
+    temp_norm = (temp_clamped - TMIN) / (TMAX - TMIN)
+    inverted_temp = 1.0 - temp_norm
+    mapped["MonsoonIntensity"] = rainfall_factor * FEATURE_MAX["MonsoonIntensity"]
     mapped["TopographyDrainage"] = max(0.0, 1.0 - soil / 120.0) * FEATURE_MAX["TopographyDrainage"]
-    mapped["ClimateChange"] = (temperature / 50.0) * FEATURE_MAX["ClimateChange"]
-    mapped["DamsQuality"] = max(0.0, 1.0 - rainfall / 180.0) * FEATURE_MAX["DamsQuality"]
-    mapped["Siltation"] = ((rainfall + soil) / 200.0) * FEATURE_MAX["Siltation"]
+    mapped["ClimateChange"] = inverted_temp * FEATURE_MAX["ClimateChange"]
+    mapped["DamsQuality"] = max(0.0, 1.0 - rainfall_clamped / 180.0) * FEATURE_MAX["DamsQuality"]
+    mapped["Siltation"] = ((rainfall_clamped + soil) / 200.0) * FEATURE_MAX["Siltation"]
     mapped["AgriculturalPractices"] = (soil / 100.0) * FEATURE_MAX["AgriculturalPractices"]
     mapped["DrainageSystems"] = max(0.0, 1.0 - soil / 110.0) * FEATURE_MAX["DrainageSystems"]
-    mapped["CoastalVulnerability"] = ((humidity + (rainfall / 6.0)) / 110.0) * FEATURE_MAX["CoastalVulnerability"]
-    mapped["Landslides"] = ((rainfall + soil) / 240.0) * FEATURE_MAX["Landslides"]
-    mapped["Watersheds"] = max(0.0, 1.0 - rainfall / 300.0) * FEATURE_MAX["Watersheds"]
-
-    for feat in FEATURES:
-        val = float(mapped.get(feat, 0.0))
-        val = max(0.0, min(val, FEATURE_MAX[feat]))
-        mapped[feat] = val
+    mapped["CoastalVulnerability"] = ((humidity + (rainfall_clamped / 6.0)) / 110.0) * FEATURE_MAX["CoastalVulnerability"]
+    mapped["Landslides"] = ((rainfall_clamped + soil) / 240.0) * FEATURE_MAX["Landslides"]
+    mapped["Watersheds"] = max(0.0, 1.0 - rainfall_clamped / 300.0) * FEATURE_MAX["Watersheds"]
     return mapped
 
 # =====================================================
@@ -153,16 +155,11 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
-
-    # 🚫 Condition: If rainfall < 50 mm, flood risk = 0
     if rainfall < 50:
         return 0.0
-
-    # Convert factors
-    rainfall_factor = rainfall / 400
+    rainfall_factor = rainfall / 500
     humidity_factor = humidity / 100
-    # 🔄 Inverse temperature factor (higher temperature → lower risk)
-    heat_factor = max(0, 1 - (temperature / 50))
+    heat_factor = max(0, 1 - ((temperature - 10) / 35))
     drainage = max(0, 1 - soil / 120)
     soil_factor = soil / 100
 
@@ -401,9 +398,9 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-    rainfall = st.number_input("Rainfall (mm)", 0, 1000, 200)
+    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
     humidity = st.number_input("Humidity (%)", 0, 100, 70)
-    temperature = st.number_input("Temperature (°C)", -10, 50, 28)
+    temperature = st.number_input("Temperature (°C)", 10, 45, 28)
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)
 
     if st.button("Predict Risk"):

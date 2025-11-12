@@ -22,27 +22,20 @@ html, body, [class*="stAppViewContainer"], [class*="main"], [data-testid="stAppV
     font-family: 'Poppins', sans-serif;
 }
 
-/* ===== Animated, Moving Starfield Layer ===== */
+/* Animated Stars Layer */
 html::before {
     content: "";
     position: fixed;
-    top: 0; left: 0; width: 200%; height: 200%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    background-size: 400px 400px;
     opacity: 0.3;
-    animation: moveStars 60s linear infinite, twinkle 6s ease-in-out infinite alternate;
+    animation: twinkle 6s infinite alternate ease-in-out;
     z-index: -1;
 }
 
-@keyframes moveStars {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-10%, -10%); }
-    100% { transform: translate(0, 0); }
-}
-
 @keyframes twinkle {
-    0% {opacity: 0.25;}
-    100% {opacity: 0.45;}
+    0% {opacity: 0.2;}
+    100% {opacity: 0.4;}
 }
 
 /* ===== Tabs ===== */

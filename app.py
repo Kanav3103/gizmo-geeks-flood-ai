@@ -12,6 +12,70 @@ from streamlit_folium import st_folium
 # PAGE CONFIG
 # =====================================================
 st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
+
+st.markdown("""
+<style>
+/* ===== Global Background ===== */
+.main {
+    background: radial-gradient(circle at 20% 20%, #5a2d82, #2c0e47 70%);
+    background-attachment: fixed;
+    color: #f5eaff;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Subtle animated stars */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+    z-index: -1;
+}
+
+/* Tabs */
+div[data-baseweb="tab-list"] {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 8px;
+    backdrop-filter: blur(10px);
+}
+.stTabs [role="tab"] {
+    color: #f5eaff !important;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.stTabs [aria-selected="true"] {
+    background-color: #9d6aff !important;
+    color: white !important;
+    box-shadow: 0 0 10px #b084ff;
+}
+
+/* Buttons */
+.stButton>button {
+    background: linear-gradient(90deg, #a76dff, #d88cff);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    transition: 0.3s;
+}
+.stButton>button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 12px #cba4ff;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #f0d7ff;
+    text-shadow: 0 0 10px #9d6aff;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # =====================================================
 # STARTUP / TRAINING SIMULATION SCREEN
 # =====================================================

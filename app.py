@@ -155,20 +155,32 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
+
+    # 🚫 Below 50 mm → no flood risk
     if rainfall < 50:
         return 0.0
-    rainfall_factor = rainfall / 300
-    humidity_factor = humidity / 100
-    heat_factor = max(0, 1 - ((temperature - 10) / 35))
-    drainage = max(0, 1 - soil / 120)
-    soil_factor = soil / 100
 
-    # Weighted contribution (rebalanced slightly)
+    # 🌧️ Progressive rainfall-based risk scaling
+    if rainfall <= 150:
+        rainfall_factor = 0.15 * (rainfall / 150)  # up to 15% at 150 mm
+    elif rainfall >= 300:
+        rainfall_factor = 1.0  # 100% at ≥300 mm
+    else:
+        # Between 150 and 300 mm → linearly interpolate 0.15 → 1.0
+        rainfall_factor = 0.15 + (1.0 - 0.15) * ((rainfall - 150) / (300 - 150))
+
+    # 🌫️ Other environmental influences
+    humidity_factor = humidity / 100               # more humidity → higher risk
+    heat_factor = max(0, 1 - ((temperature - 10) / 35))  # lower when hot
+    drainage = max(0, 1 - soil / 120)              # poor drainage → higher risk
+    soil_factor = soil / 100                       # wetter soil → higher risk
+
+    # ⚖️ Weighted combination (rainfall = 40%)
     flood_score = (
-        0.35 * rainfall_factor +
+        0.40 * rainfall_factor +
         0.25 * humidity_factor +
-        0.10 * heat_factor +      # now lower when temp is high
-        0.20 * (1 - drainage) +
+        0.15 * heat_factor +
+        0.10 * (1 - drainage) +
         0.10 * soil_factor
     )
 

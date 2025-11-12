@@ -8,6 +8,61 @@ import time
 import folium
 from streamlit_folium import st_folium
 
+# === Bright Mauve Theme (No Stars) ===
+st.markdown("""
+<style>
+/* ===== BRIGHT MAUVE THEME (NO STARS, CLEAN LAYOUT) ===== */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background: radial-gradient(circle at top left, #d3a6ff 0%, #c18bff 30%, #a86bff 70%, #612d91 100%);
+    color: white;
+    height: 100%;
+    overflow: visible !important;
+}
+
+/* ===== Tabs Section ===== */
+div[data-baseweb="tab-list"] {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    color: black !important;
+}
+div[data-baseweb="tab"] p {
+    color: black !important;
+    font-weight: 700;
+}
+
+/* ===== Buttons ===== */
+.stButton>button, .stDownloadButton>button {
+    background: linear-gradient(135deg, #b87fff, #9e5cff);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    box-shadow: 0 0 10px rgba(180, 120, 255, 0.5);
+    transition: all 0.3s ease;
+}
+.stButton>button:hover, .stDownloadButton>button:hover {
+    background: linear-gradient(135deg, #a864ff, #8a3eff);
+    box-shadow: 0 0 18px rgba(180, 120, 255, 0.8);
+}
+
+/* ===== DataFrame Table Styling ===== */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(150, 90, 255, 0.4);
+}
+
+/* ===== Headers ===== */
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # =====================================================
 # PAGE CONFIG
 # =====================================================

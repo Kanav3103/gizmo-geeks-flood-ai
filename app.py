@@ -151,32 +151,25 @@ def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
 # FORMULA-BASED FLOOD RISK MODEL
 # =====================================================
 def calculate_flood_probability(rainfall, humidity, temperature, soil):
-    """
-    Calculates realistic flood probability based on environmental parameters.
-    Rules:
-    - Rainfall < 113 mm → 0% flood risk
-    - Rainfall >= 113 mm → flood risk starts at ~1% and rises progressively
-    - Weighted factors: rainfall, humidity, soil, temperature
-    """
     rainfall = float(rainfall)
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
 
-    # No flood risk for very light rain
+    # Below threshold → no risk
     if rainfall < 113:
         return 0.0
 
-    # Normalize rainfall from 113 → 600 mm
-    rainfall_norm = (rainfall - 113) / (600 - 113)  # 0 → 1
-    rainfall_norm = np.clip(rainfall_norm, 0.01, 1.0)  # start at ~1%
+    # Normalize rainfall: 113 mm → 600 mm maps to 0.01 → 1.0
+    rainfall_norm = (rainfall - 113) / (600 - 113)  # 0 → 1 scale
+    rainfall_norm = max(rainfall_norm, 0.01)       # start at 1%
 
     # Normalize other factors
     humidity_norm = humidity / 100.0
     soil_norm = soil / 100.0
     temperature_norm = 1.0 - ((temperature - 10.0) / (45.0 - 10.0))  # higher temp → lower risk
 
-    # Weighted combination (adjust weights)
+    # Weighted combination
     flood_score = (
         0.4 * rainfall_norm +  # rainfall ~40%
         0.3 * humidity_norm +  # humidity ~30%
@@ -187,7 +180,6 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     # Clip to [0,1]
     flood_score = np.clip(flood_score, 0.0, 1.0)
     return flood_score
-
 
 # =====================================================
 # SAFETY GUIDE

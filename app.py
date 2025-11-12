@@ -15,69 +15,64 @@ st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wi
 
 st.markdown("""
 <style>
-/* ===== Full Starry Background ===== */
-html, body, [class*="stAppViewContainer"], [class*="main"], [data-testid="stAppViewContainer"] {
-    background: radial-gradient(circle at 25% 25%, #4b1d70, #1a0732 70%) fixed;
-    color: #f5eaff;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Animated Stars Layer */
-html::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.3;
-    animation: twinkle 6s infinite alternate ease-in-out;
-    z-index: -1;
-}
-
-@keyframes twinkle {
-    0% {opacity: 0.2;}
-    100% {opacity: 0.4;}
-}
-
-/* ===== Tabs ===== */
-div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 8px;
-    backdrop-filter: blur(10px);
-}
-.stTabs [role="tab"] {
-    color: #f5eaff !important;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: 0.3s;
-}
-.stTabs [aria-selected="true"] {
-    background-color: #b072ff !important;
-    color: white !important;
-    box-shadow: 0 0 10px #cda0ff;
-}
-
-/* ===== Buttons ===== */
-.stButton>button {
-    background: linear-gradient(90deg, #a76dff, #d88cff);
+/* ===== Cosmic Mauve Starry Theme ===== */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background: radial-gradient(circle at top left, #b57edc 0%, #a16ae8 30%, #7a49b9 70%, #2b1e44 100%);
     color: white;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
-    transition: 0.3s;
-}
-.stButton>button:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 12px #cba4ff;
+    height: 100%;
+    overflow: hidden;
 }
 
-/* ===== Headings ===== */
-h1, h2, h3 {
-    color: #f0d7ff;
-    text-shadow: 0 0 10px #9d6aff;
+/* ===== Star Layers ===== */
+#stars, #stars2, #stars3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    z-index: -1;
+    background-repeat: repeat;
+    background-size: contain;
+}
+
+/* Star animations (3 layers for parallax) */
+#stars {
+    background-image: radial-gradient(2px 2px at 20px 20px, white, transparent);
+    animation: animStar 100s linear infinite;
+}
+#stars2 {
+    background-image: radial-gradient(1.5px 1.5px at 10px 10px, #fff, transparent);
+    animation: animStar 200s linear infinite;
+}
+#stars3 {
+    background-image: radial-gradient(1px 1px at 5px 5px, #d6c4ff, transparent);
+    animation: animStar 300s linear infinite;
+}
+
+/* ===== Keyframes for star movement ===== */
+@keyframes animStar {
+    from {background-position: 0 0;}
+    to {background-position: -10000px 10000px;}
+}
+
+/* ===== Text & Tabs Styling ===== */
+div[data-baseweb="tab-list"] {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    color: black !important;
+    padding: 0.6rem 1rem;
+}
+div[data-baseweb="tab"] p {
+    color: black !important;
+    font-weight: 600;
 }
 </style>
+
+<div id="stars"></div>
+<div id="stars2"></div>
+<div id="stars3"></div>
 """, unsafe_allow_html=True)
 
 

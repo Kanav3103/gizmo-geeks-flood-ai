@@ -8,15 +8,14 @@ import time
 import folium
 from streamlit_folium import st_folium
 
-# === Soft Mauve Theme (Balanced & Clean) ===
 st.markdown("""
 <style>
-/* ===== SOFT MAUVE THEME (NO STARS) ===== */
+/* ===== SOFT MAUVE THEME (NO STARS, FIXED MAP SIZE) ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
     background: radial-gradient(circle at top left, #cbb3f5 0%, #b18de0 35%, #9b74d1 70%, #5d3f91 100%);
     color: white;
     height: 100%;
-    overflow: visible !important;
+    overflow: hidden !important; /* ✅ Prevent layout overflow */
 }
 
 /* ===== Tabs Section ===== */
@@ -56,12 +55,27 @@ div[data-baseweb="tab"] p {
     box-shadow: 0 0 15px rgba(110, 80, 170, 0.35);
 }
 
+/* ===== Fix Map and Charts Overflow ===== */
+[data-testid="stVerticalBlock"] {
+    overflow: visible !important;
+}
+[data-testid="stHorizontalBlock"] {
+    overflow: visible !important;
+}
+.element-container iframe {
+    max-height: 600px !important; /* ✅ Limit map height */
+    max-width: 100% !important;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(90, 60, 140, 0.3);
+}
+
 /* ===== Headers ===== */
 h1, h2, h3, h4, h5, h6 {
     color: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # =====================================================
 # PAGE CONFIG

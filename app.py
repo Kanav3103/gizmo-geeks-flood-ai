@@ -10,114 +10,66 @@ from streamlit_folium import st_folium
 
 st.markdown("""
 <style>
-
-/* ===== Global Layout ===== */
-html, body, [class*="stApp"] {
-    background: radial-gradient(circle at 30% 20%, #d5b3ff 0%, #b689f9 30%, #8f5aff 60%, #5a2ea6 100%);
-    background-attachment: fixed;
-    color: #1a1a1a;
-    font-family: 'Poppins', sans-serif;
-    overflow-x: hidden;
+/* ===== Cosmic Mauve Starry Theme ===== */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background: radial-gradient(circle at top left, #b57edc 0%, #a16ae8 30%, #7a49b9 70%, #2b1e44 100%);
+    color: white;
+    height: 100%;
+    overflow: hidden;
 }
 
-/* ===== Animated, Moving Starfield Layer ===== */
-html::before {
-    content: "";
+/* ===== Star Layers ===== */
+#stars, #stars2, #stars3 {
     position: fixed;
-    top: 0; left: 0; width: 200%; height: 200%;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    background-size: 400px 400px;
-    opacity: 0.35;
-    animation: moveStars 80s linear infinite, twinkle 6s ease-in-out infinite alternate;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
     z-index: -1;
+    background-repeat: repeat;
+    background-size: contain;
 }
 
-@keyframes moveStars {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-10%, -10%); }
-    100% { transform: translate(0, 0); }
+/* Star animations (3 layers for parallax) */
+#stars {
+    background-image: radial-gradient(2px 2px at 20px 20px, white, transparent);
+    animation: animStar 100s linear infinite;
+}
+#stars2 {
+    background-image: radial-gradient(1.5px 1.5px at 10px 10px, #fff, transparent);
+    animation: animStar 200s linear infinite;
+}
+#stars3 {
+    background-image: radial-gradient(1px 1px at 5px 5px, #d6c4ff, transparent);
+    animation: animStar 300s linear infinite;
 }
 
-@keyframes twinkle {
-    0% {opacity: 0.25;}
-    100% {opacity: 0.45;}
+/* ===== Keyframes for star movement ===== */
+@keyframes animStar {
+    from {background-position: 0 0;}
+    to {background-position: -10000px 10000px;}
 }
 
-/* ===== Tabs ===== */
+/* ===== Text & Tabs Styling ===== */
 div[data-baseweb="tab-list"] {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 10px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(90, 30, 166, 0.2);
-}
-
-div[data-baseweb="tab"] {
+    border-radius: 12px;
     color: black !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+    padding: 0.6rem 1rem;
 }
-
-div[data-baseweb="tab"]:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+div[data-baseweb="tab"] p {
+    color: black !important;
+    font-weight: 600;
 }
-
-div[data-baseweb="tab"][aria-selected="true"] {
-    background: linear-gradient(135deg, #b26dff, #8e45ff);
-    color: white !important;
-    box-shadow: 0 0 15px rgba(160, 60, 255, 0.4);
-}
-
-/* ===== Headers ===== */
-h1, h2, h3 {
-    color: #2a004f;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-}
-
-/* ===== Buttons ===== */
-button[kind="primary"] {
-    background: linear-gradient(135deg, #a14fff, #7026d9) !important;
-    color: white !important;
-    font-weight: 600 !important;
-    border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 3px 10px rgba(80, 0, 150, 0.3);
-    transition: all 0.3s ease-in-out;
-}
-
-button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #bb76ff, #8e45ff) !important;
-    transform: scale(1.04);
-    box-shadow: 0 6px 18px rgba(80, 0, 150, 0.5);
-}
-
-/* ===== Tables ===== */
-table {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    color: #2a004f;
-}
-
-/* ===== Info Boxes ===== */
-.stAlert, .stSuccess, .stInfo {
-    background: rgba(255, 255, 255, 0.25) !important;
-    backdrop-filter: blur(6px);
-    color: #1a0033 !important;
-    border-radius: 12px;
-}
-
-/* ===== Footer Tip ===== */
-p[style*='text-align:center'] {
-    color: #2b0061 !important;
-}
-
 </style>
+
+<div id="stars"></div>
+<div id="stars2"></div>
+<div id="stars3"></div>
 """, unsafe_allow_html=True)
+
 
 # =====================================================
 # PAGE CONFIG

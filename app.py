@@ -13,7 +13,7 @@ st.markdown("""
 <style>
 /* ===== BRIGHT MAUVE THEME (NO STARS, CLEAN LAYOUT) ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #d3a6ff 0%, #c18bff 30%, #a86bff 70%, #612d91 100%);
+    background: radial-gradient(circle at top left, #ab8de0 0%, #a274e0 30%, #885bcc 70%, #4d2479 100%);
     color: white;
     height: 100%;
     overflow: visible !important;

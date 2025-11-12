@@ -165,19 +165,21 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     if rainfall < 50:
         return 0.0
 
-    monsoon = rainfall / 15
-    drainage = max(0, 1 - soil / 120)
-    heat_factor = temperature / 50
-    humidity_factor = humidity / 100
-    soil_factor = soil / 100
+    # Convert factors
     rainfall_factor = rainfall / 400
+    humidity_factor = humidity / 100
+    # 🔄 Inverse temperature factor (higher temperature → lower risk)
+    heat_factor = max(0, 1 - (temperature / 50))
+    drainage = max(0, 1 - soil / 120)
+    soil_factor = soil / 100
 
+    # Weighted contribution (rebalanced slightly)
     flood_score = (
-        0.30 * rainfall_factor +
-        0.20 * humidity_factor +
-        0.15 * heat_factor +
+        0.35 * rainfall_factor +
+        0.25 * humidity_factor +
+        0.10 * heat_factor +      # now lower when temp is high
         0.20 * (1 - drainage) +
-        0.15 * soil_factor
+        0.10 * soil_factor
     )
 
     flood_score = np.clip(flood_score, 0, 1)

@@ -127,6 +127,7 @@ FEATURE_MAX = {
 # =====================================================
 def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
     mapped = {}
+    # 🔹 Updated max rainfall to 600
     rainfall_clamped = max(0.0, min(rainfall, 600.0))
     rainfall_factor = rainfall_clamped / 600.0
     TMIN = 10.0
@@ -150,7 +151,14 @@ def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
 # FORMULA-BASED FLOOD RISK MODEL
 # =====================================================
 def calculate_flood_probability(rainfall, humidity, temperature, soil):
-
+    """
+    Calculates realistic flood probability based on environmental parameters.
+    Rules:
+    - Rainfall < 50 mm → 0% flood risk
+    - Rainfall ≤150 mm → ≤15% flood risk (capped)
+    - Rainfall 150–300 mm → progressively higher (15%–100%)
+    - Rainfall ≥300 mm → 100% flood risk
+    """
     rainfall = float(rainfall)
     humidity = float(humidity)
     temperature = float(temperature)
@@ -192,7 +200,6 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
         flood_score = min(flood_score, 0.15)
 
     return flood_score
-
 
 # =====================================================
 # SAFETY GUIDE
@@ -417,10 +424,12 @@ with tabs[0]:
 # ---------------- TAB 2 ----------------
 with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
-    rainfall = st.number_input("Rainfall (mm)", 0, 500, 200)
+    rainfall = st.number_input("Rainfall (mm)", 0, 600, 200)
     humidity = st.number_input("Humidity (%)", 0, 100, 70)
     temperature = st.number_input("Temperature (°C)", 10, 45, 28)
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)
+
+    st.caption("💧 Flood risk rises from 15% at 150 mm to 100% at 300 mm rainfall (24 h period).")
 
     if st.button("Predict Risk"):
         flood_prob = calculate_flood_probability(rainfall, humidity, temperature, soil)

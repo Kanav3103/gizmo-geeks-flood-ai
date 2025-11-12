@@ -12,7 +12,7 @@ st.markdown("""
 <style>
 /* ===== Cosmic Mauve Starry Theme ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #e2c4ff 0%, #c79df2 35%, #a67be4 70%, #7a4db8 100%);
+    background: radial-gradient(circle at top left, #cbb3f5 0%, #b18de0 35%, #9b74d1 70%, #5d3f91 100%);
     color: white;
     height: 100%;
     overflow: hidden;

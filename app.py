@@ -15,71 +15,49 @@ st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wi
 
 st.markdown("""
 <style>
-/* ===== Full Starry Background ===== */
-html, body, [class*="stAppViewContainer"], [class*="main"], [data-testid="stAppViewContainer"] {
-    background: radial-gradient(circle at 25% 25%, #4b1d70, #1a0732 70%) fixed;
-    color: #f5eaff;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Animated Stars Layer */
-html::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.3;
-    animation: twinkle 6s infinite alternate ease-in-out;
-    z-index: -1;
-}
-
-@keyframes twinkle {
-    0% {opacity: 0.2;}
-    100% {opacity: 0.4;}
-}
-
-/* ===== Tabs ===== */
-div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 8px;
-    backdrop-filter: blur(10px);
-}
-.stTabs [role="tab"] {
-    color: #f5eaff !important;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: 0.3s;
-}
-.stTabs [aria-selected="true"] {
-    background-color: #b072ff !important;
-    color: white !important;
-    box-shadow: 0 0 10px #cda0ff;
-}
-
-/* ===== Buttons ===== */
-.stButton>button {
-    background: linear-gradient(90deg, #a76dff, #d88cff);
+/* ===== BRIGHT MAUVE THEME (NO STARS, CLEAN LAYOUT) ===== */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background: radial-gradient(circle at top left, #d3a6ff 0%, #c18bff 30%, #a86bff 70%, #612d91 100%);
     color: white;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
-    transition: 0.3s;
-}
-.stButton>button:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 12px #cba4ff;
+    height: 100%;
+    overflow: visible !important;
 }
 
-/* ===== Headings ===== */
-h1, h2, h3 {
-    color: #f0d7ff;
-    text-shadow: 0 0 10px #9d6aff;
+/* ===== Keep layout normal for maps/charts ===== */
+[data-testid="stVerticalBlock"] {
+    overflow: visible !important;
+}
+
+/* ===== Tabs Styling ===== */
+div[data-baseweb="tab-list"] {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    color: black !important;
+}
+div[data-baseweb="tab"] p {
+    color: black !important;
+    font-weight: 700;
+}
+
+/* ===== Widget Styling ===== */
+.stButton>button, .stDownloadButton>button {
+    background: linear-gradient(135deg, #b87fff, #9e5cff);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    box-shadow: 0 0 10px rgba(180, 120, 255, 0.5);
+}
+.stButton>button:hover, .stDownloadButton>button:hover {
+    background: linear-gradient(135deg, #a864ff, #8a3eff);
+    box-shadow: 0 0 18px rgba(180, 120, 255, 0.8);
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 
 # =====================================================

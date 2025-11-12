@@ -127,8 +127,8 @@ FEATURE_MAX = {
 # =====================================================
 def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
     mapped = {}
-    rainfall_clamped = max(0.0, min(rainfall, 500.0))
-    rainfall_factor = rainfall_clamped / 500.0
+    rainfall_clamped = max(0.0, min(rainfall, 600.0))
+    rainfall_factor = rainfall_clamped / 600.0
     TMIN = 10.0
     TMAX = 45.0
     temp_clamped = max(TMIN, min(temperature, TMAX))
@@ -157,7 +157,7 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     soil = float(soil)
     if rainfall < 50:
         return 0.0
-    rainfall_factor = rainfall / 250
+    rainfall_factor = rainfall / 300
     humidity_factor = humidity / 100
     heat_factor = max(0, 1 - ((temperature - 10) / 35))
     drainage = max(0, 1 - soil / 120)

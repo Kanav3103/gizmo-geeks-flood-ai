@@ -61,12 +61,6 @@ h1, h2, h3, h4, h5, h6 {
     color: white !important;
 }
 
-/* ===== Subtle Text Glow Effect ===== */
-h1, h2, h3, h4, h5, h6, p, span, div {
-    text-shadow: 0 0 10px rgba(210, 190, 255, 0.60),
-                 0 0 18px rgba(180, 140, 230, 0.50);
-}
-
 </style>
 """, unsafe_allow_html=True)
 

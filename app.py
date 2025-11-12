@@ -167,7 +167,7 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
 
     monsoon = rainfall / 15
     drainage = max(0, 1 - soil / 120)
-    heat_factor = temperature / 45
+    heat_factor = temperature / 50
     humidity_factor = humidity / 100
     soil_factor = soil / 100
     rainfall_factor = rainfall / 400
@@ -408,8 +408,8 @@ with tabs[1]:
     st.header("🔍 Predict Flood Risk Manually")
     rainfall = st.number_input("Rainfall (mm)", 0, 1000, 200)
     humidity = st.number_input("Humidity (%)", 0, 100, 70)
-    temperature = st.number_input("Temperature (°C)", -10.0, 50.0, 28.0)
-    soil = st.number_input("Soil Moisture (%)", 0.0, 100.0, 40.0)
+    temperature = st.number_input("Temperature (°C)", -10, 50, 28)
+    soil = st.number_input("Soil Moisture (%)", 0, 100, 40)
 
     if st.button("Predict Risk"):
         flood_prob = calculate_flood_probability(rainfall, humidity, temperature, soil)

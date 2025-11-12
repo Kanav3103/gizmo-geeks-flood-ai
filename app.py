@@ -154,51 +154,38 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     """
     Calculates realistic flood probability based on environmental parameters.
     Rules:
-    - Rainfall < 50 mm → 0% flood risk
-    - Rainfall ≤150 mm → ≤15% flood risk (capped)
-    - Rainfall 150–300 mm → progressively higher (15%–100%)
-    - Rainfall ≥300 mm → 100% flood risk
+    - Rainfall < 113 mm → 0% flood risk
+    - Rainfall >= 113 mm → risk determined by weighted factors:
+      rainfall, humidity, temperature, soil
+    - No hard caps other than <113 mm
     """
     rainfall = float(rainfall)
     humidity = float(humidity)
     temperature = float(temperature)
     soil = float(soil)
 
-    # 🚫 No flood risk for light rain
-    if rainfall < 50:
+    # No flood risk for very light rain
+    if rainfall < 113:
         return 0.0
 
-    # 🌧️ Rainfall-based scaling
-    if rainfall <= 150:
-        rainfall_factor = 0.15 * (rainfall / 150)  # up to 15% at 150 mm
-    elif rainfall >= 300:
-        rainfall_factor = 1.0  # full risk at ≥300 mm
-    else:
-        # Linear interpolation between 150 and 300 mm (0.15 → 1.0)
-        rainfall_factor = 0.15 + (1.0 - 0.15) * ((rainfall - 150) / (300 - 150))
+    # Normalize rainfall (0 → 1)
+    rainfall_norm = min(rainfall / 600.0, 1.0)  # max rainfall = 600mm
 
-    # 🌫️ Environmental modifiers
-    humidity_factor = humidity / 100.0
-    heat_factor = max(0.0, 1.0 - ((temperature - 10.0) / 35.0))  # cooler → higher risk
-    drainage_factor = max(0.0, 1.0 - soil / 120.0)               # poor drainage → high risk
-    soil_factor = soil / 100.0                                   # high soil moisture → high risk
+    # Normalize other factors
+    humidity_norm = humidity / 100.0
+    temperature_norm = 1.0 - ((temperature - 10.0) / (45.0 - 10.0))  # higher temp → lower risk
+    soil_norm = soil / 100.0
 
-    # ⚖️ Weighted combination (rainfall = 40%)
+    # Weighted combination (adjust weights as needed)
     flood_score = (
-        0.40 * rainfall_factor +
-        0.25 * humidity_factor +
-        0.15 * heat_factor +
-        0.10 * (1 - drainage_factor) +
-        0.10 * soil_factor
+        0.4 * rainfall_norm +  # rainfall ~40%
+        0.3 * humidity_norm +  # humidity ~30%
+        0.2 * soil_norm +      # soil moisture ~20%
+        0.1 * temperature_norm # temperature modifier ~10%
     )
 
-    # 🧮 Clamp total
+    # Clip to [0,1]
     flood_score = np.clip(flood_score, 0.0, 1.0)
-
-    # ⚠️ Enforce rainfall ≤150 mm cap
-    if rainfall <= 150:
-        flood_score = min(flood_score, 0.15)
-
     return flood_score
 
 # =====================================================

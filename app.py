@@ -15,25 +15,30 @@ st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wi
 
 st.markdown("""
 <style>
-/* ===== Global Background ===== */
-.main {
-    background: radial-gradient(circle at 20% 20%, #5a2d82, #2c0e47 70%);
-    background-attachment: fixed;
+/* ===== Full Starry Background ===== */
+html, body, [class*="stAppViewContainer"], [class*="main"], [data-testid="stAppViewContainer"] {
+    background: radial-gradient(circle at 25% 25%, #4b1d70, #1a0732 70%) fixed;
     color: #f5eaff;
     font-family: 'Poppins', sans-serif;
 }
 
-/* Subtle animated stars */
-body::before {
+/* Animated Stars Layer */
+html::before {
     content: "";
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: url('https://www.transparenttextures.com/patterns/stardust.png');
     opacity: 0.3;
+    animation: twinkle 6s infinite alternate ease-in-out;
     z-index: -1;
 }
 
-/* Tabs */
+@keyframes twinkle {
+    0% {opacity: 0.2;}
+    100% {opacity: 0.4;}
+}
+
+/* ===== Tabs ===== */
 div[data-baseweb="tab-list"] {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
@@ -48,12 +53,12 @@ div[data-baseweb="tab-list"] {
     transition: 0.3s;
 }
 .stTabs [aria-selected="true"] {
-    background-color: #9d6aff !important;
+    background-color: #b072ff !important;
     color: white !important;
-    box-shadow: 0 0 10px #b084ff;
+    box-shadow: 0 0 10px #cda0ff;
 }
 
-/* Buttons */
+/* ===== Buttons ===== */
 .stButton>button {
     background: linear-gradient(90deg, #a76dff, #d88cff);
     color: white;
@@ -67,13 +72,14 @@ div[data-baseweb="tab-list"] {
     box-shadow: 0 0 12px #cba4ff;
 }
 
-/* Headings */
+/* ===== Headings ===== */
 h1, h2, h3 {
     color: #f0d7ff;
     text-shadow: 0 0 10px #9d6aff;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # =====================================================

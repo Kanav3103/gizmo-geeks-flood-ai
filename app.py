@@ -1,80 +1,99 @@
-# https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app 
-# Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
-
-import streamlit as st
-import pandas as pd
-import numpy as np
-import time
-import folium
-from streamlit_folium import st_folium
-
-# =====================================================
-# PAGE CONFIG
-# =====================================================
-st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
-
 st.markdown("""
 <style>
-/* ===== Cosmic Mauve Starry Theme ===== */
+/* ===== ULTRA BRIGHT MAUVE STARFIELD THEME ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #b57edc 0%, #a16ae8 30%, #7a49b9 70%, #2b1e44 100%);
+    background: radial-gradient(circle at top left, #c58aff 0%, #b97aff 25%, #a164e8 55%, #612d91 100%);
     color: white;
     height: 100%;
     overflow: hidden;
 }
 
-/* ===== Star Layers ===== */
+/* ===== STAR LAYERS ===== */
 #stars, #stars2, #stars3 {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    display: block;
+    width: 200%;
+    height: 200%;
     z-index: -1;
     background-repeat: repeat;
-    background-size: contain;
+    background-size: 200px 200px;
+    pointer-events: none;
 }
 
-/* Star animations (3 layers for parallax) */
+/* Bright glowing stars — 3 layers, each moving differently */
 #stars {
-    background-image: radial-gradient(2px 2px at 20px 20px, white, transparent);
-    animation: animStar 100s linear infinite;
+    background-image: radial-gradient(3px 3px at 20px 20px, rgba(255,255,255,0.95), rgba(255,255,255,0.1)),
+                      radial-gradient(2px 2px at 60px 80px, rgba(255,255,255,0.9), transparent),
+                      radial-gradient(4px 4px at 100px 150px, rgba(255,255,255,1), rgba(255,255,255,0.1));
+    animation: moveStars 120s linear infinite;
+    filter: drop-shadow(0 0 6px white) drop-shadow(0 0 12px #fff);
 }
 #stars2 {
-    background-image: radial-gradient(1.5px 1.5px at 10px 10px, #fff, transparent);
-    animation: animStar 200s linear infinite;
+    background-image: radial-gradient(2px 2px at 40px 40px, rgba(255,255,200,0.9), transparent),
+                      radial-gradient(3px 3px at 90px 130px, rgba(255,255,255,1), transparent),
+                      radial-gradient(1.5px 1.5px at 150px 200px, rgba(255,255,255,0.8), transparent);
+    animation: moveStars2 180s linear infinite;
+    filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #f8e8ff);
 }
 #stars3 {
-    background-image: radial-gradient(1px 1px at 5px 5px, #d6c4ff, transparent);
-    animation: animStar 300s linear infinite;
+    background-image: radial-gradient(3px 3px at 50px 50px, rgba(255,240,255,0.95), transparent),
+                      radial-gradient(2px 2px at 110px 170px, rgba(255,255,255,1), transparent),
+                      radial-gradient(4px 4px at 200px 250px, rgba(255,255,255,0.95), rgba(255,255,255,0.1));
+    animation: moveStars3 240s linear infinite;
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #d8c4ff);
 }
 
-/* ===== Keyframes for star movement ===== */
-@keyframes animStar {
-    from {background-position: 0 0;}
-    to {background-position: -10000px 10000px;}
+/* ===== STAR MOVEMENT ===== */
+@keyframes moveStars {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-10%, -10%); }
+    100% { transform: translate(0, 0); }
+}
+@keyframes moveStars2 {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(5%, -5%); }
+    100% { transform: translate(0, 0); }
+}
+@keyframes moveStars3 {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-7%, 7%); }
+    100% { transform: translate(0, 0); }
 }
 
-/* ===== Text & Tabs Styling ===== */
+/* ===== STAR TWINKLE ===== */
+@keyframes twinkle {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff); }
+    50% { opacity: 0.6; filter: drop-shadow(0 0 4px #fdfdff) drop-shadow(0 0 8px #f8e8ff); }
+}
+
+/* Apply twinkle animation */
+#stars, #stars2, #stars3 {
+    animation-name: moveStars, twinkle;
+    animation-duration: 150s, 3s;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+}
+
+/* ===== Tabs and UI ===== */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
-    color: black !important;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
     padding: 0.6rem 1rem;
+    color: black !important;
 }
 div[data-baseweb="tab"] p {
     color: black !important;
-    font-weight: 600;
+    font-weight: 700;
 }
 </style>
 
+<!-- Star layers -->
 <div id="stars"></div>
 <div id="stars2"></div>
 <div id="stars3"></div>
 """, unsafe_allow_html=True)
-
 
 
 # =====================================================

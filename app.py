@@ -10,69 +10,66 @@ from streamlit_folium import st_folium
 
 st.markdown("""
 <style>
-/* ===== SOFT MAUVE THEME (NO STARS, FIXED MAP SIZE) ===== */
-html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #cbb3f5 0%, #b18de0 35%, #9b74d1 70%, #5d3f91 100%);
-    color: white;
-    height: 100%;
-    overflow: hidden !important; /* prevent scroll and resize bugs */
+/* ===== Global Background ===== */
+.main {
+    background: radial-gradient(circle at 20% 20%, #5a2d82, #2c0e47 70%);
+    background-attachment: fixed;
+    color: #f5eaff;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* ===== Tabs Section ===== */
+/* Subtle animated stars */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+    z-index: -1;
+}
+
+/* Tabs */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 8px;
     backdrop-filter: blur(10px);
-    border-radius: 14px;
-    padding: 0.6rem 1rem;
-    margin-bottom: 1rem;
-    color: black !important;
 }
-div[data-baseweb="tab"] p {
-    color: black !important;
-    font-weight: 700;
+.stTabs [role="tab"] {
+    color: #f5eaff !important;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.stTabs [aria-selected="true"] {
+    background-color: #9d6aff !important;
+    color: white !important;
+    box-shadow: 0 0 10px #b084ff;
 }
 
-/* ===== Buttons ===== */
-.stButton>button, .stDownloadButton>button {
-    background: linear-gradient(135deg, #a580e0, #8d6fcf);
+/* Buttons */
+.stButton>button {
+    background: linear-gradient(90deg, #a76dff, #d88cff);
     color: white;
-    border: none;
     border-radius: 10px;
     font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    box-shadow: 0 0 10px rgba(140, 100, 200, 0.4);
-    transition: all 0.3s ease;
+    padding: 0.6rem 1rem;
+    transition: 0.3s;
 }
-.stButton>button:hover, .stDownloadButton>button:hover {
-    background: linear-gradient(135deg, #9a79d8, #7d5ec6);
-    box-shadow: 0 0 15px rgba(140, 100, 200, 0.6);
-}
-
-/* ===== DataFrame Table Styling ===== */
-[data-testid="stDataFrame"] {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(110, 80, 170, 0.35);
+.stButton>button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 12px #cba4ff;
 }
 
-/* ===== Map Size Fix ===== */
-.element-container iframe, .stIFrame iframe, iframe {
-    height: 450px !important; /* ✅ Controls map height */
-    max-height: 450px !important;
-    width: 100% !important;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(80, 50, 130, 0.3);
-}
-[data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {
-    overflow: visible !important;
-}
-
-/* ===== Headers ===== */
-h1, h2, h3, h4, h5, h6 {
-    color: white !important;
+/* Headings */
+h1, h2, h3 {
+    color: #f0d7ff;
+    text-shadow: 0 0 10px #9d6aff;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # =====================================================
 # PAGE CONFIG

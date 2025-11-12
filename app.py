@@ -597,8 +597,8 @@ with tabs[4]:
             tooltip="Recommended Evacuation Path"
         ).add_to(m)
 
-        st_folium(m, width=1400, height=500)
+        st_folium(m, width=1400, height=1000)
         st.markdown(
-            "<p style='text-align:center; font-size:16px; color:gray;'>📍 Always follow official local evacuation orders and stay informed via government alerts.</p>",
+            "<p style='text-align:center; font-size:16px; color:lightgreen;'>📍 Always follow official local evacuation orders and stay informed via government alerts.</p>",
             unsafe_allow_html=True
         )

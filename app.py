@@ -10,66 +10,114 @@ from streamlit_folium import st_folium
 
 st.markdown("""
 <style>
-/* ===== Global Background ===== */
-.main {
-    background: radial-gradient(circle at 20% 20%, #5a2d82, #2c0e47 70%);
+
+/* ===== Global Layout ===== */
+html, body, [class*="stApp"] {
+    background: radial-gradient(circle at 30% 20%, #d5b3ff 0%, #b689f9 30%, #8f5aff 60%, #5a2ea6 100%);
     background-attachment: fixed;
-    color: #f5eaff;
+    color: #1a1a1a;
     font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
 }
 
-/* Subtle animated stars */
-body::before {
+/* ===== Animated, Moving Starfield Layer ===== */
+html::before {
     content: "";
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; left: 0; width: 200%; height: 200%;
     background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.3;
+    background-size: 400px 400px;
+    opacity: 0.35;
+    animation: moveStars 80s linear infinite, twinkle 6s ease-in-out infinite alternate;
     z-index: -1;
 }
 
-/* Tabs */
+@keyframes moveStars {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-10%, -10%); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes twinkle {
+    0% {opacity: 0.25;}
+    100% {opacity: 0.45;}
+}
+
+/* ===== Tabs ===== */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 8px;
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(90, 30, 166, 0.2);
 }
-.stTabs [role="tab"] {
-    color: #f5eaff !important;
-    font-weight: 600;
-    padding: 10px 20px;
+
+div[data-baseweb="tab"] {
+    color: black !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
     border-radius: 10px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
-.stTabs [aria-selected="true"] {
-    background-color: #9d6aff !important;
+
+div[data-baseweb="tab"]:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+div[data-baseweb="tab"][aria-selected="true"] {
+    background: linear-gradient(135deg, #b26dff, #8e45ff);
     color: white !important;
-    box-shadow: 0 0 10px #b084ff;
+    box-shadow: 0 0 15px rgba(160, 60, 255, 0.4);
 }
 
-/* Buttons */
-.stButton>button {
-    background: linear-gradient(90deg, #a76dff, #d88cff);
-    color: white;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
-    transition: 0.3s;
-}
-.stButton>button:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 12px #cba4ff;
-}
-
-/* Headings */
+/* ===== Headers ===== */
 h1, h2, h3 {
-    color: #f0d7ff;
-    text-shadow: 0 0 10px #9d6aff;
+    color: #2a004f;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
+
+/* ===== Buttons ===== */
+button[kind="primary"] {
+    background: linear-gradient(135deg, #a14fff, #7026d9) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 3px 10px rgba(80, 0, 150, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #bb76ff, #8e45ff) !important;
+    transform: scale(1.04);
+    box-shadow: 0 6px 18px rgba(80, 0, 150, 0.5);
+}
+
+/* ===== Tables ===== */
+table {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    color: #2a004f;
+}
+
+/* ===== Info Boxes ===== */
+.stAlert, .stSuccess, .stInfo {
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(6px);
+    color: #1a0033 !important;
+    border-radius: 12px;
+}
+
+/* ===== Footer Tip ===== */
+p[style*='text-align:center'] {
+    color: #2b0061 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
-
 
 # =====================================================
 # PAGE CONFIG

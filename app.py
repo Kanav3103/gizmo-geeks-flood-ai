@@ -63,8 +63,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ===== Softer Subtle Text Glow Effect ===== */
 h1, h2, h3, h4, h5, h6, p, span, div {
-    text-shadow: 0 0 4px rgba(210, 190, 255, 0.25),
-                 0 0 10px rgba(180, 140, 230, 0.2);
+    text-shadow: 0 0 6px rgba(210, 190, 255, 0.50),
+                 0 0 12px rgba(180, 140, 230, 0.40);
 }
 
 </style>

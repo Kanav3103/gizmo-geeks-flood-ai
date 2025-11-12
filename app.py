@@ -72,7 +72,7 @@ def map_user_inputs_to_features(rainfall, humidity, temperature, soil):
     mapped = {}
     mapped["MonsoonIntensity"] = rainfall / 10.0
     mapped["TopographyDrainage"] = max(0.0, 1.0 - soil / 120.0) * FEATURE_MAX["TopographyDrainage"]
-    mapped["ClimateChange"] = (temperature / 45.0) * FEATURE_MAX["ClimateChange"]
+    mapped["ClimateChange"] = (temperature / 50.0) * FEATURE_MAX["ClimateChange"]
     mapped["DamsQuality"] = max(0.0, 1.0 - rainfall / 180.0) * FEATURE_MAX["DamsQuality"]
     mapped["Siltation"] = ((rainfall + soil) / 200.0) * FEATURE_MAX["Siltation"]
     mapped["AgriculturalPractices"] = (soil / 100.0) * FEATURE_MAX["AgriculturalPractices"]

@@ -362,7 +362,7 @@ with tabs[1]:
 
 # ---------------- TAB 3 ----------------
 with tabs[2]:
-    st.header("🛟 Flood Safety Guide — Based on Risk %")
+    st.header("Flood Safety Guide — Based on Risk %")
     user_risk = st.slider("Select your estimated Flood Risk (%)", 0, 100, 30)
     for (low, high), guide in safety_guide.items():
         if low <= user_risk <= high:

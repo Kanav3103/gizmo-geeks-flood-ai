@@ -429,8 +429,6 @@ with tabs[1]:
     temperature = st.number_input("Temperature (°C)", 10, 45, 28)
     soil = st.number_input("Soil Moisture (%)", 0, 100, 40)
 
-    st.caption("💧 Flood risk rises from 15% at 150 mm to 100% at 300 mm rainfall (24 h period).")
-
     if st.button("Predict Risk"):
         flood_prob = calculate_flood_probability(rainfall, humidity, temperature, soil)
         risk_percent = round(flood_prob * 100, 2)

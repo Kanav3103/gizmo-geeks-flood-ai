@@ -8,66 +8,59 @@ import time
 import folium
 from streamlit_folium import st_folium
 
+# === Bright Mauve Theme (No Stars) ===
 st.markdown("""
 <style>
-/* ===== Cosmic Mauve Starry Theme ===== */
+/* ===== BRIGHT MAUVE THEME (NO STARS, CLEAN LAYOUT) ===== */
 html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-    background: radial-gradient(circle at top left, #cbb9e8 0%, #b39cd1 35%, #8f78b3 70%, #5b4379 100%);
+    background: radial-gradient(circle at top left, #d3a6ff 0%, #c18bff 30%, #a86bff 70%, #612d91 100%);
     color: white;
     height: 100%;
-    overflow: hidden;
+    overflow: visible !important;
 }
 
-/* ===== Star Layers ===== */
-#stars, #stars2, #stars3 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: block;
-    z-index: -1;
-    background-repeat: repeat;
-    background-size: contain;
-}
-
-/* Star animations (3 layers for parallax) */
-#stars {
-    background-image: radial-gradient(2px 2px at 20px 20px, white, transparent);
-    animation: animStar 100s linear infinite;
-}
-#stars2 {
-    background-image: radial-gradient(1.5px 1.5px at 10px 10px, #fff, transparent);
-    animation: animStar 200s linear infinite;
-}
-#stars3 {
-    background-image: radial-gradient(1px 1px at 5px 5px, #d6c4ff, transparent);
-    animation: animStar 300s linear infinite;
-}
-
-/* ===== Keyframes for star movement ===== */
-@keyframes animStar {
-    from {background-position: 0 0;}
-    to {background-position: -10000px 10000px;}
-}
-
-/* ===== Text & Tabs Styling ===== */
+/* ===== Tabs Section ===== */
 div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
-    color: black !important;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
     padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    color: black !important;
 }
 div[data-baseweb="tab"] p {
     color: black !important;
+    font-weight: 700;
+}
+
+/* ===== Buttons ===== */
+.stButton>button, .stDownloadButton>button {
+    background: linear-gradient(135deg, #b87fff, #9e5cff);
+    color: white;
+    border: none;
+    border-radius: 10px;
     font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    box-shadow: 0 0 10px rgba(180, 120, 255, 0.5);
+    transition: all 0.3s ease;
+}
+.stButton>button:hover, .stDownloadButton>button:hover {
+    background: linear-gradient(135deg, #a864ff, #8a3eff);
+    box-shadow: 0 0 18px rgba(180, 120, 255, 0.8);
+}
+
+/* ===== DataFrame Table Styling ===== */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(150, 90, 255, 0.4);
+}
+
+/* ===== Headers ===== */
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
 }
 </style>
-
-<div id="stars"></div>
-<div id="stars2"></div>
-<div id="stars3"></div>
 """, unsafe_allow_html=True)
 
 

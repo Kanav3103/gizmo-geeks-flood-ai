@@ -157,7 +157,7 @@ def calculate_flood_probability(rainfall, humidity, temperature, soil):
     soil = float(soil)
     if rainfall < 50:
         return 0.0
-    rainfall_factor = rainfall / 500
+    rainfall_factor = rainfall / 250
     humidity_factor = humidity / 100
     heat_factor = max(0, 1 - ((temperature - 10) / 35))
     drainage = max(0, 1 - soil / 120)

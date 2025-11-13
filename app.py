@@ -67,7 +67,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 # =====================================================
 # PAGE CONFIG
 # =====================================================
-st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wide")
+st.set_page_config(page_title="Flood Predictor AI",layout="wide")
 
 # =====================================================
 # STARTUP / TRAINING SIMULATION SCREEN
@@ -75,8 +75,8 @@ st.set_page_config(page_title="Flood Predictor AI", page_icon="🌊", layout="wi
 if "boot_completed" not in st.session_state:
     placeholder = st.empty()
     with placeholder.container():
-        st.title("🌊 Gizmo Geeks Flood AI — Booting Up")
-        st.write("### 🤖 Initializing flood prediction engine... please wait ⏳")
+        st.title("Gizmo Geeks Flood AI — Booting Up")
+        st.write("Initializing flood prediction engine... please wait")
 
         progress_bar = st.progress(0)
         for i in range(100):
@@ -90,8 +90,8 @@ if "boot_completed" not in st.session_state:
     placeholder.empty()
     st.session_state.boot_completed = True
 
-st.title("🌊 Gizmo Geeks Flood AI — Flood Prediction System")
-st.markdown("### Smart flood risk prediction based on environmental conditions.")
+st.title("Gizmo Geeks Flood AI — Flood Prediction System")
+st.markdown("Smart flood risk prediction based on environmental conditions.")
 
 # =====================================================
 # CONSTANTS & FEATURE SETUP
@@ -361,16 +361,16 @@ safety_guide = {
 # STREAMLIT UI — TABS
 # =====================================================
 tabs = st.tabs([
-    "🌆 Mumbai Live Data",
-    "🔍 Predict Flood Risk",
-    "🛟 Flood Safety Guide",
-    "🚨 Emergency Helplines",
-    "🧭 Evacuation Route & Safe Shelters"
+    "Mumbai Live Data",
+    "Predict Flood Risk",
+    "Flood Safety Guide",
+    "Emergency Helplines",
+    "Evacuation Route & Safe Shelters"
 ])
 
 # ---------------- TAB 1 ----------------
 with tabs[0]:
-    st.header("🌆 Mumbai Live Data (Automatically updated from Satellites)")
+    st.header("Mumbai Live Data (Automatically updated from Satellites)")
     st.write("The data updates will be stopped after the event is over as our PCs will not be able to handle such an overload, but it can be done, given an ample amount of resources.")
 
     mumbai_data = {
@@ -395,7 +395,7 @@ with tabs[0]:
 
     for (low, high), guide in safety_guide.items():
         if low <= risk <= high:
-            st.markdown(f"### 🛟 Safety Measures ({low}-{high}% Risk Zone)")
+            st.markdown(f"Safety Measures ({low}-{high}% Risk Zone)")
             st.markdown(f"**Before Flood:** {guide['Before']}")
             st.markdown(f"**During Flood:** {guide['During']}")
             st.markdown(f"**After Flood:** {guide['After']}")
@@ -403,7 +403,7 @@ with tabs[0]:
 
 # ---------------- TAB 2 ----------------
 with tabs[1]:
-    st.header("🔍 Predict Flood Risk Manually")
+    st.header("Predict Flood Risk Manually")
     rainfall = st.number_input("Rainfall (mm)", 0, 600, 200)
     humidity = st.number_input("Humidity (%)", 0, 100, 70)
     temperature = st.number_input("Temperature (°C)", 10, 45, 28)
@@ -416,7 +416,7 @@ with tabs[1]:
 
         for (low, high), guide in safety_guide.items():
             if low <= risk_percent <= high:
-                st.markdown(f"### 🛟 Safety Actions ({low}-{high}% Zone)")
+                st.markdown(f"Safety Actions ({low}-{high}% Zone)")
                 st.markdown(f"**Before Flood:** {guide['Before']}")
                 st.markdown(f"**During Flood:** {guide['During']}")
                 st.markdown(f"**After Flood:** {guide['After']}")
@@ -436,10 +436,10 @@ with tabs[2]:
 
 # ---------------- TAB 4 ----------------
 with tabs[3]:
-    st.header("🚨 Emergency Helplines & Disaster Contacts")
+    st.header("Emergency Helplines & Disaster Contacts")
     st.write("In case of a flood or any severe weather emergency, contact the following helplines immediately.")
 
-    st.markdown("### 📞 National Helplines")
+    st.markdown("National Helplines")
     st.markdown("""
    - **National Disaster Management Authority (NDMA):** 011-26701700
    - **National Emergency Helpline (India):** 112
@@ -448,7 +448,7 @@ with tabs[3]:
    - **Ambulance:** 102 / 108
    """)
 
-    st.markdown("### 🌆 Mumbai-Specific Helplines")
+    st.markdown("Mumbai-Specific Helplines")
     st.markdown("""
    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916
    - **Mumbai Police Helpline:** 100
@@ -457,7 +457,7 @@ with tabs[3]:
    - **Railway Helpline (for stranded passengers):** 139
    """)
 
-    st.markdown("### 🌐 Useful Websites")
+    st.markdown("Useful Websites")
     st.markdown("""
    - [National Disaster Management Authority (NDMA)](https://ndma.gov.in)
    - [Maharashtra State Disaster Management Authority](https://dmgroup.maharashtra.gov.in)
@@ -465,12 +465,12 @@ with tabs[3]:
    - [BMC Disaster Management](https://portal.mcgm.gov.in)
    """)
 
-    st.info("💡 **Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies.")
-    st.success("Stay alert, stay safe, and help others when possible 💪")
+    st.info("**Tip:** Always keep your phone charged, follow official instructions, and avoid spreading rumours during emergencies.")
+    st.success("Stay alert, stay safe, and help others when possible. ")
 
 # ---------------- TAB 5 ----------------
 with tabs[4]:
-    st.header("🧭 Evacuation Route & Safe Shelters")
+    st.header("Evacuation Route & Safe Shelters")
     st.write("Select your area to view nearby safe shelters and recommended evacuation routes during heavy rainfall or flood alerts.")
 
     # Define data for each area
@@ -523,7 +523,7 @@ with tabs[4]:
     # Generate map dynamically based on selected area
     data = evacuation_data.get(area)
     if data is None:
-        st.error("❌ No evacuation data found for this area!")
+        st.error("No evacuation data found for this area!")
     else:
         m = folium.Map(location=data["center"], zoom_start=13)
 
@@ -536,6 +536,6 @@ with tabs[4]:
 
         st_folium(m, width=1400, height=1000)
         st.markdown(
-            "<p style='text-align:center; font-size:16px; color:lightgreen;'>📍 Always follow official local evacuation orders and stay informed via government alerts.</p>",
+            "<p style='text-align:center; font-size:16px; color:lightgreen;'> Always follow official local evacuation orders and stay informed via government alerts.</p>",
             unsafe_allow_html=True
         )

@@ -482,7 +482,6 @@ with tabs[4]:
                 {"name": "Andheri Sports Complex Shelter", "lat": 19.1260, "lon": 72.8360},
                 {"name": "Vile Parle Community Hall", "lat": 19.1020, "lon": 72.8440},
             ],
-            "route": [[19.1135, 72.8697], [19.1197, 72.8468], [19.1260, 72.8360]]
         },
         "Kurla": {
             "center": [19.0722, 72.8780],
@@ -491,7 +490,6 @@ with tabs[4]:
                 {"name": "Nehru Nagar High School Shelter", "lat": 19.0655, "lon": 72.8825},
                 {"name": "BKC Public Ground", "lat": 19.0665, "lon": 72.8550},
             ],
-            "route": [[19.0655, 72.8825], [19.0722, 72.8780], [19.0665, 72.8550]]
         },
         "Bandra": {
             "center": [19.0545, 72.8400],
@@ -500,7 +498,6 @@ with tabs[4]:
                 {"name": "St. Andrew’s Auditorium", "lat": 19.0575, "lon": 72.8370},
                 {"name": "Bandra Reclamation Ground", "lat": 19.0500, "lon": 72.8405},
             ],
-            "route": [[19.0500, 72.8405], [19.0545, 72.8400], [19.0580, 72.8340]]
         },
         "Dadar": {
             "center": [19.0176, 72.8562],
@@ -509,7 +506,6 @@ with tabs[4]:
                 {"name": "Dadar Railway Camp", "lat": 19.0168, "lon": 72.8449},
                 {"name": "Portuguese Church Shelter", "lat": 19.0231, "lon": 72.8441},
             ],
-            "route": [[19.0168, 72.8449], [19.0176, 72.8562], [19.0201, 72.8371]]
         },
         "Powai": {
             "center": [19.1176, 72.9060],
@@ -518,7 +514,6 @@ with tabs[4]:
                 {"name": "Powai Lake View Relief Zone", "lat": 19.1102, "lon": 72.9053},
                 {"name": "Hiranandani Public School Shelter", "lat": 19.1213, "lon": 72.9120},
             ],
-            "route": [[19.1102, 72.9053], [19.1176, 72.9060], [19.1334, 72.9133]]
         }
     }
 

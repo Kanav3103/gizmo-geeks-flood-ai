@@ -534,14 +534,6 @@ with tabs[4]:
                 icon=folium.Icon(color="green", icon="home")
             ).add_to(m)
 
-        folium.PolyLine(
-            locations=data["route"],
-            color="blue",
-            weight=3,
-            opacity=0.7,
-            tooltip="Recommended Evacuation Path"
-        ).add_to(m)
-
         st_folium(m, width=1400, height=1000)
         st.markdown(
             "<p style='text-align:center; font-size:16px; color:lightgreen;'>📍 Always follow official local evacuation orders and stay informed via government alerts.</p>",

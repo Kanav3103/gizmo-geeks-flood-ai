@@ -67,7 +67,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 # =====================================================
 # PAGE CONFIG
 # =====================================================
-st.set_page_config(page_title="Flood Predictor AI",layout="wide")
+st.set_page_config(page_title="HydroPredict AI",layout="wide")
 
 # =====================================================
 # STARTUP / TRAINING SIMULATION SCREEN
@@ -75,7 +75,7 @@ st.set_page_config(page_title="Flood Predictor AI",layout="wide")
 if "boot_completed" not in st.session_state:
     placeholder = st.empty()
     with placeholder.container():
-        st.title("Gizmo Geeks Flood AI — Booting Up")
+        st.title("HydroPredict AI — Booting Up")
         st.write("Initializing flood prediction engine... please wait")
 
         progress_bar = st.progress(0)
@@ -90,7 +90,7 @@ if "boot_completed" not in st.session_state:
     placeholder.empty()
     st.session_state.boot_completed = True
 
-st.title("Gizmo Geeks Flood AI — Flood Prediction System")
+st.title("HydroPredict AI — Flood Prediction System")
 st.markdown("Smart flood risk prediction based on environmental conditions.")
 
 # =====================================================
@@ -448,7 +448,7 @@ with tabs[3]:
    - **Ambulance:** 102 / 108
    """)
 
-    st.markdown("Mumbai-Specific Helplines")
+    st.markdown("Mumbai Specific Helplines")
     st.markdown("""
    - **Brihanmumbai Municipal Corporation (BMC) Control Room:** 1916
    - **Mumbai Police Helpline:** 100

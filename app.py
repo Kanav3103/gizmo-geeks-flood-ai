@@ -375,10 +375,10 @@ with tabs[0]:
     st.write("The data updates will be stopped after the event is over as our PCs will not be able to handle such an overload, but it can be done, given an ample amount of resources.")
 
     mumbai_data = {
-        "Rainfall (mm)": 215,
-        "Humidity (%)": 82,
-        "Temperature (°C)": 29,
-        "Soil Moisture (%)": 55
+        "Rainfall (mm)": 0,
+        "Humidity (%)": 49,
+        "Temperature (°C)": 23,
+        "Soil Moisture (%)": 32
     }
 
     df_mumbai = pd.DataFrame([mumbai_data])

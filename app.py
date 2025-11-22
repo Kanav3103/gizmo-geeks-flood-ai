@@ -1,5 +1,6 @@
 # https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
 # Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
+#shorturl - https://shorturl.at/gBu2ncc
 
 import streamlit as st
 import pandas as pd
@@ -83,7 +84,7 @@ if "boot_completed" not in st.session_state:
             time.sleep(0.1)  # total ~10 seconds
             progress_bar.progress(i + 1)
 
-        st.success("✅ Model trained successfully!")
+        st.success("Model trained successfully!")
         time.sleep(3)
 
     # Clear the placeholder (remove training screen)

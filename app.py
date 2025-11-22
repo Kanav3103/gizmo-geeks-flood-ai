@@ -1,6 +1,6 @@
 # https://gizmo-geeks-flood-ai-pew2g7fgsivnjbznvnnrmc.streamlit.app
 # Link, for backend, KANAV ONLY : https://github.com/Kanav3103/gizmo-geeks-flood-ai/blob/main/app.py
-#shorturl - https://shorturl.at/gBu2ncc
+#shorturl - https://shorturl.at/QQwMi
 
 import streamlit as st
 import pandas as pd

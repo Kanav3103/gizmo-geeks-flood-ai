@@ -376,9 +376,9 @@ with tabs[0]:
 
     mumbai_data = {
         "Rainfall (mm)": 0,
-        "Humidity (%)": 49,
-        "Temperature (°C)": 23,
-        "Soil Moisture (%)": 32
+        "Humidity (%)": 47,
+        "Temperature (°C)": 28,
+        "Soil Moisture (%)": 37
     }
 
     df_mumbai = pd.DataFrame([mumbai_data])

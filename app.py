@@ -70,6 +70,13 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 # =====================================================
 st.set_page_config(page_title="HydroPredict AI",layout="wide")
 
+st.markdown("""
+<audio autoplay loop hidden>
+  <source src="tu-tu-tu-du-max-verstappen.mp3" type="audio/mpeg">
+</audio>
+""", unsafe_allow_html=True)
+
+
 # =====================================================
 # STARTUP / TRAINING SIMULATION SCREEN
 # =====================================================
